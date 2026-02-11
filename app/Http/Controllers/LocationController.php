@@ -245,8 +245,6 @@ class LocationController extends Controller
         }
     }
 
-    
-
     // ====================== Private Save Location ======================
     private function saveLocation($orgname, $locid, $locname, $data=[])
     {
