@@ -23,6 +23,7 @@ class AccountStyles extends Model
         'acc_style_reader', 
         'acc_style_qty_uom',
         'acc_style_cost_supported',
+        'acc_style_xls_format', //NORMAL, SPECIAL=exanmple: biodiesel B53
         'acc_style_state', //0=non active 1=active
     ];  
     public function company()

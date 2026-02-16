@@ -21,10 +21,6 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->timestamps();
 
-            $table->foreign('connector_source_id')
-                  ->references('id')
-                  ->on('connector_source')
-                  ->onDelete('cascade');
         });
     }
 
