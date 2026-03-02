@@ -21,6 +21,7 @@ class Companies extends Model
       'db_name',
       'db_user',
       'db_pass',
+      'org_link',
     ]; 
     public function organizations()
     {
