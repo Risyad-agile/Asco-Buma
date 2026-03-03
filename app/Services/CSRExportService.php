@@ -36,7 +36,13 @@ class CSRExportService
             \App\Exports\EnviziOthersExport::class         => "Account_Setup_and_Data_Load TO Others_{$date}.xlsx",
             \App\Exports\EnviziResignmentExport::class      => "Account_Setup_and_Data_Load TO Resign_{$date}.xlsx",
             \App\Exports\EnviziRetireExport::class         => "Account_Setup_and_Data_Load TO Retire_{$date}.xlsx",
-
+            \App\Exports\EnviziSHEExport::class         => "Account_Setup_and_Data_Load SHE_{$date}.xlsx",
+            \App\Exports\EnviziEmployeeExport::class        => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
+            \App\Exports\EnviziTOCEduExport::class        => "Account_Setup_and_Data_Load TOC - edu_{$date}.xlsx",
+            \App\Exports\EnviziTOCLifeliLIMExport::class        => "Account_Setup_and_Data_Load TOC - Lifeli LIM_{$date}.xlsx",
+            \App\Exports\EnviziTOCLiveliEduLiExport::class        => "Account_Setup_and_Data_Load TOC - Liveli Edu Li_{$date}.xlsx",
+            \App\Exports\EnviziTOCLiveliLBMExport::class        => "Account_Setup_and_Data_Load TOC - liveli LBM_{$date}.xlsx",
+            \App\Exports\EnviziTotalPeCatExport::class        => "Account_Setup_and_Data_Load total pe cat_{$date}.xlsx",
 
             // tambahkan 12 lainnya di sini
         ];
