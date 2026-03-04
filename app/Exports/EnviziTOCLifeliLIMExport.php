@@ -4,7 +4,7 @@ namespace App\Exports;
 
 class EnviziTOCLifeliLIMExport extends BaseCSRExportFormat2
 {
-    private const STYLE = 'CSR Employee - Turnover - Retirement';// lupa cara cek acc comp style lewat mysql workbench
+    private const STYLE = 'CSR Employee - Direct';//tidak ada style khusus untuk TOC lifeli LIM, jadi pakai style umum saja
 
     public function __construct($companyId)
     {

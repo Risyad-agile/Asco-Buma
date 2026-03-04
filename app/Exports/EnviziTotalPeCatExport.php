@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziTotalPeCatExport extends BaseCSRExportFormat3
+class EnviziTotalPeCatExport extends BaseCSRExportFormat4
 {
-    private const STYLE = 'CSR Employee - Turnover - Retirement';// lupa cara cek acc comp style lewat mysql workbench
+    private const STYLE = 'CSR Employee - Direct';// apakah ada style khusus untuk Total PE Cat? kalau tidak ada, pakai style umum saja
 
     public function __construct($companyId)
     {

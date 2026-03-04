@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormat3 implements FromCollection, WithHeadings
+class BaseCSRExportFormat4 implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $accountStyle;
@@ -54,14 +54,23 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
                     $row->year ? $row->year . '-01-01' : '',
                     $row->year ? $row->year . '-12-31' : '',
                     '', '', '', '', '', '', 
-                    '', // incident
-                    '', // accident
-                    '', // LTIFR
-                    '', // Ceiling LTIFR
-                    '', // TRIR
-                    '', // Ceiling TRIR
-                    '', // Month
-                    '', // Period
+                    '', // Total Employee
+                    '', // Direct
+                    '', // In direct
+                    '', // Level 4
+                    '', // Level 5
+                    '', // Level 6
+                    '', // Level 7
+                    '', // Level 8
+                    '', // Level 9
+                    '', // Middle Management
+                    '', // Permanent
+                    '', // Senior Management
+                    '', // Staff
+                    '', // Turnover Death
+                    '', // Turnover Others
+                    '', // Turnover Resignation
+                    '', // Turnover Retirement
                 ];
             });
     }
@@ -88,14 +97,23 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number',
-            'Incident',
-            'Accident',
-            'LTIFR',
-            'Ceiling LTIFR',
-            'TRIR',
-            'Ceiling TRIR',
-            'Month',
-            'Period'
+            'Total Employee',
+            'Direct',
+            'In direct',
+            'Level 4',
+            'Level 5',
+            'Level 6',
+            'Level 7',
+            'Level 8',
+            'Level 9',
+            'Middle Management',
+            'Permanent',
+            'Senior Management',
+            'Staff',
+            'Turnover Death',
+            'Turnover Others',
+            'Turnover Resignation',
+            'Turnover Retirement',
         ];
     }
 }

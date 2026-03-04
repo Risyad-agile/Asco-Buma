@@ -12,6 +12,8 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
     protected int $companyId;
     protected string $accountStyle;
     protected $db; // connection dynamic
+    protected string $orgLink;
+    protected string $compName;
 
     public function __construct(int $companyId, string $accountStyle)
     {
@@ -21,11 +23,72 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
         // pakai dynamic connection sesuai companyId
         $this->db = DB::connection('dynamic'); 
         // until here cause no data valid 
+
+        // ambil org_link & comp_name dari default DB
+        $company = DB::table('companies')
+            ->where('id', $companyId)
+            ->first(['org_link', 'comp_name']);
+
+        $this->orgLink = $company->org_link ?? '';
+        $this->compName = $company->comp_name ?? '';// COMPANY NAME null di database
     }
 
     public function collection()
     {
-        return collect($this->data);
+        return $this->db->table('data_csr')
+            ->where('account_style', $this->accountStyle)
+            ->get()
+            ->map(function ($row) {
+                return [
+                    $this->orgLink,      // Organization Link
+                    $this->compName,     // Organization
+                    $row->location ?? '',
+                    '',                  // Location Ref
+                    '',                  // Account Style Link
+                    $row->account_style ?? '',
+                    '',                  // Account Subtype
+                    $row->account_number ?? '',
+                    '',                  // Account Reference
+                    '',                  // Account Supplier
+                    '',                  // Account Reader
+                    $row->year ? $row->year . '-01-01' : '',
+                    $row->year ? $row->year . '-12-31' : '',
+                    '', '', '', '', '', '', 
+                    '', // Student
+                    '', // Outcome Student
+                    '', // Outcome Add Student
+                    '', // Amount Spending Student
+                    '', // Teacher
+                    '', // outcome Teacher
+                    '', // outcome add Teacher
+                    '', // amount spending Teacher
+                    '', // Job Seeker
+                    '', // Outcome Teacher
+                    '', // Outcome Add Teacher
+                    '', // Amount Spending Teacher
+                    '', // Job Seeker
+                    '', // Outcome Job Seeker
+                    '', // Outcome Add Job Seeker
+                    '', // Amount Spending Job Seeker
+                    '', // Local Vendor
+                    '', // Outcome Local Vendor
+                    '', // Outcome Add Local Vendor
+                    '', // Amount Spending Local Vendor
+                    '', // Enterpreneur
+                    '', // Outcome Enterpreneur
+                    '', // Outcome add Enterpreneur
+                    '', // Amount Spending Enterpreneur
+                    '', // Farmer
+                    '', // Outcome Farmer
+                    '', // Outcome Add Farmer
+                    '', // Amount Spending Farmer
+                    '', // Buma Employee
+                    '', // Outcome Buma Employee
+                    '', // Outcome Add Buma Employee
+                    '', // Amount Spending Buma Employee
+                    '', // Period
+                ];
+            });
     }
 
     public function headings(): array
