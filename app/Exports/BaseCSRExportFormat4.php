@@ -10,15 +10,13 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class BaseCSRExportFormat4 implements FromCollection, WithHeadings
 {
     protected int $companyId;
-    protected string $accountStyle;
     protected $db; // connection dynamic
     protected string $orgLink;
     protected string $compName;
 
-    public function __construct(int $companyId, string $accountStyle)
+    public function __construct(int $companyId)
     {
         $this->companyId = $companyId;
-        $this->accountStyle = $accountStyle;
 
         // pakai dynamic connection sesuai companyId
         $this->db = DB::connection('dynamic'); 
@@ -36,7 +34,6 @@ class BaseCSRExportFormat4 implements FromCollection, WithHeadings
     public function collection()
     {
         return $this->db->table('data_csr')
-            ->where('account_style', $this->accountStyle)
             ->get()
             ->map(function ($row) {
                 return [
@@ -54,7 +51,7 @@ class BaseCSRExportFormat4 implements FromCollection, WithHeadings
                     $row->year ? $row->year . '-01-01' : '',
                     $row->year ? $row->year . '-12-31' : '',
                     '', '', '', '', '', '', 
-                    '', // Total Employee
+                    $row->employee_total ?? 0, // Total Employee
                     '', // Direct
                     '', // In direct
                     '', // Level 4

@@ -63,10 +63,6 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     '', // outcome add Teacher
                     '', // amount spending Teacher
                     '', // Job Seeker
-                    '', // Outcome Teacher
-                    '', // Outcome Add Teacher
-                    '', // Amount Spending Teacher
-                    '', // Job Seeker
                     '', // Outcome Job Seeker
                     '', // Outcome Add Job Seeker
                     '', // Amount Spending Job Seeker
