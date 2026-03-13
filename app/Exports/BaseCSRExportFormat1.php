@@ -34,8 +34,10 @@ class BaseCSRExportFormat1 implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->db->table('data_csr')
-            ->where('account_style', $this->accountStyle)
+        return $this->db->table('data_csr as csr')
+            ->leftJoin('account_styles as acc', 'csr.account_style', '=', 'acc.acc_style_caption') 
+            ->where('csr.account_style', $this->accountStyle) 
+            ->select('csr.*', 'acc.acc_style_link')
             ->get()
             ->map(function ($row) {
                 return [
@@ -43,16 +45,16 @@ class BaseCSRExportFormat1 implements FromCollection, WithHeadings
                     $this->compName,     // Organization
                     $row->location ?? '',
                     '',                  // Location Ref
-                    '',                  // Account Style Link
+                    $row->acc_style_link ?? '', // Account Style Link
                     $row->account_style ?? '',
-                    '',                  // Account Subtype
+                    'Default',           // Account Subtype
                     $row->account_number ?? '',
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->year ? $row->year . '-01-01' : '',
-                    $row->year ? $row->year . '-12-31' : '',
-                    '', '', '', '', '', '',
+                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
+                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    'Actual', 'Standard', 'Default', 'Overwrite', '', '',
                     $row->employee_total ?? 0,
                     $row->male ?? 0,
                     $row->female ?? 0,

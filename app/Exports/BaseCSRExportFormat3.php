@@ -11,7 +11,7 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $accountStyle;
-    protected $db; // connection dynamic
+    protected $db;          // dynamic DB connection
     protected string $orgLink;
     protected string $compName;
 
@@ -20,9 +20,8 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
         $this->companyId = $companyId;
         $this->accountStyle = $accountStyle;
 
-        // pakai dynamic connection sesuai companyId
+        // dynamic DB connection
         $this->db = DB::connection('dynamic'); 
-        // until here cause no data valid 
 
         // ambil org_link & comp_name dari default DB
         $company = DB::table('companies')
@@ -30,13 +29,15 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
             ->first(['org_link', 'comp_name']);
 
         $this->orgLink = $company->org_link ?? '';
-        $this->compName = $company->comp_name ?? '';// COMPANY NAME null di database
+        $this->compName = $company->comp_name ?? '';
     }
 
     public function collection()
     {
-        return $this->db->table('data_csr')
-            ->where('account_style', $this->accountStyle)
+        return $this->db->table('data_csr as csr')
+            ->leftJoin('account_styles as acc', 'csr.account_style', '=', 'acc.acc_style_caption') 
+            ->where('csr.account_style', $this->accountStyle) 
+            ->select('csr.*', 'acc.acc_style_link')
             ->get()
             ->map(function ($row) {
                 return [
@@ -44,24 +45,17 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
                     $this->compName,     // Organization
                     $row->location ?? '',
                     '',                  // Location Ref
-                    '',                  // Account Style Link
+                    $row->acc_style_link ?? '', // Account Style Link
                     $row->account_style ?? '',
-                    '',                  // Account Subtype
+                    'Default',           // Account Subtype
                     $row->account_number ?? '',
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->year ? $row->year . '-01-01' : '',
-                    $row->year ? $row->year . '-12-31' : '',
-                    '', '', '', '', '', '', 
-                    '', // incident
-                    '', // accident
-                    '', // LTIFR
-                    '', // Ceiling LTIFR
-                    '', // TRIR
-                    '', // Ceiling TRIR
-                    '', // Month
-                    '', // Period
+                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
+                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    'Actual', 'Standard', 'Default', 'Overwrite', '', '',
+                    0,0,0,0,0,0,0,0 
                 ];
             });
     }
@@ -94,7 +88,7 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
             'Ceiling LTIFR',
             'TRIR',
             'Ceiling TRIR',
-            'Month',
+            'Month', 
             'Period'
         ];
     }

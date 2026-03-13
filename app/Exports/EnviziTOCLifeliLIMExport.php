@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-class EnviziTOCLifeliLIMExport extends BaseCSRExportFormat2
+class EnviziTOCLifeliLIMExport extends BaseCSRExportFormat4
 {
     private const STYLE = 'CSR Employee - TOC Lifeli LIM';//tidak ada style khusus untuk TOC lifeli LIM, jadi pakai style umum saja
 

@@ -4,7 +4,7 @@ namespace App\Exports;
 
 class EnviziIndirectExport extends BaseCSRExportFormat1
 {
-    private const STYLE = 'In Direct';
+    private const STYLE = 'CSR Employee - Indirect';
 
     public function __construct($companyId)
     {

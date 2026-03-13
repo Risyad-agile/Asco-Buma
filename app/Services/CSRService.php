@@ -49,6 +49,8 @@ class CSRService
                 $payload = [
                     'location'              => trim($row['location'] ?? ''),
                     'account_style'         => trim($row['accountStyle'] ?? ''),
+                    'organization'          => trim($row['organization']),
+                    'account_number'        => trim($row['accountNumber']),
                     'year'                  => $row['year'] ?? null,
 
                     'male'                  => (int) ($row['male'] ?? 0),

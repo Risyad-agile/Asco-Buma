@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziTOCLiveliLBMExport extends BaseCSRExportFormat2
+class EnviziTOCLiveliLBMExport extends BaseCSRExportFormat4
 {
-    private const STYLE = 'CSR Employee - TOC Liveli LBM';// tidak ada style khusus untuk TOC liveli LBM, jadi pakai style umum saja
+    private const STYLE = 'CSR Employee Buma- TOC Liveli LBM';// tidak ada style khusus untuk TOC liveli LBM, jadi pakai style umum saja
 
     public function __construct($companyId)
     {

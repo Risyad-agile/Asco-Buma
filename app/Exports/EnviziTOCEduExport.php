@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-class EnviziTOCEduExport extends BaseCSRExportFormat2
+class EnviziTOCEduExport extends BaseCSRExportFormat4
 {
     private const STYLE = 'CSR Employee - TOC Edu';// tidak ada style khusus untuk TOC edu, jadi pakai style umum saja
 

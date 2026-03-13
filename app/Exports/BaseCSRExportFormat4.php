@@ -10,17 +10,18 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class BaseCSRExportFormat4 implements FromCollection, WithHeadings
 {
     protected int $companyId;
-    protected $db; // connection dynamic
+    protected string $accountStyle;
+    protected $db;          // dynamic DB connection
     protected string $orgLink;
     protected string $compName;
 
-    public function __construct(int $companyId)
+    public function __construct(int $companyId, string $accountStyle)
     {
         $this->companyId = $companyId;
+        $this->accountStyle = $accountStyle;
 
-        // pakai dynamic connection sesuai companyId
+        // dynamic DB connection
         $this->db = DB::connection('dynamic'); 
-        // until here cause no data valid 
 
         // ambil org_link & comp_name dari default DB
         $company = DB::table('companies')
@@ -28,12 +29,15 @@ class BaseCSRExportFormat4 implements FromCollection, WithHeadings
             ->first(['org_link', 'comp_name']);
 
         $this->orgLink = $company->org_link ?? '';
-        $this->compName = $company->comp_name ?? '';// COMPANY NAME null di database
+        $this->compName = $company->comp_name ?? '';
     }
 
     public function collection()
     {
-        return $this->db->table('data_csr')
+        return $this->db->table('data_csr as csr')
+            ->leftJoin('account_styles as acc', 'csr.account_style', '=', 'acc.acc_style_caption') 
+            ->where('csr.account_style', $this->accountStyle) 
+            ->select('csr.*', 'acc.acc_style_link')
             ->get()
             ->map(function ($row) {
                 return [
@@ -41,33 +45,19 @@ class BaseCSRExportFormat4 implements FromCollection, WithHeadings
                     $this->compName,     // Organization
                     $row->location ?? '',
                     '',                  // Location Ref
-                    '',                  // Account Style Link
+                    $row->acc_style_link ?? '', // Account Style Link
                     $row->account_style ?? '',
-                    '',                  // Account Subtype
+                    'Default',           // Account Subtype
                     $row->account_number ?? '',
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->year ? $row->year . '-01-01' : '',
-                    $row->year ? $row->year . '-12-31' : '',
-                    '', '', '', '', '', '', 
-                    $row->employee_total ?? 0, // Total Employee
-                    '', // Direct
-                    '', // In direct
-                    '', // Level 4
-                    '', // Level 5
-                    '', // Level 6
-                    '', // Level 7
-                    '', // Level 8
-                    '', // Level 9
-                    '', // Middle Management
-                    '', // Permanent
-                    '', // Senior Management
-                    '', // Staff
-                    '', // Turnover Death
-                    '', // Turnover Others
-                    '', // Turnover Resignation
-                    '', // Turnover Retirement
+                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
+                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    'Actual', 'Standard', 'Default', 'Overwrite', '', '',
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0 
                 ];
             });
     }
@@ -94,23 +84,35 @@ class BaseCSRExportFormat4 implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number',
-            'Total Employee',
-            'Direct',
-            'In direct',
-            'Level 4',
-            'Level 5',
-            'Level 6',
-            'Level 7',
-            'Level 8',
-            'Level 9',
-            'Middle Management',
-            'Permanent',
-            'Senior Management',
-            'Staff',
-            'Turnover Death',
-            'Turnover Others',
-            'Turnover Resignation',
-            'Turnover Retirement',
+            'Student',
+            'Outcome Student',
+            'Outcome Add Student',
+            'Amount Spending Student',
+            'Teacher',
+            'Outcome Teacher',
+            'Outcome Add Teacher',
+            'Amount Spending Teacher',
+            'Job Seeker',
+            'Outcome Job Seeker',
+            'Outcome Add Job Seeker',
+            'Amount Spending Job Seeker',
+            'Local Vendor',
+            'Outcome Local Vendor',
+            'Outcome Add Local Vendor',
+            'Amount Spending Local Vendor',
+            'Enterpreneur',
+            'Outcome Enterpreneur',
+            'Outcome add Enterpreneur',
+            'Amount Spending Enterpreneur',
+            'Farmer',
+            'Outcome Farmer',
+            'Outcome Add Farmer',
+            'Amount Spending Farmer',
+            'Buma Employee',
+            'Outcome Buma Employee',
+            'Outcome Add Buma Employee',
+            'Amount Spending Buma Employee', 
+            'Period'
         ];
     }
 }

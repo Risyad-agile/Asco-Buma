@@ -10,12 +10,13 @@ class AccountStyles extends Model
     protected $fillable=[
         'acc_style_link',
         'acc_style_caption',
+        // ---- yg dibawah ini belum di isi dulu ( tidak ada di table client )
         'acc_style_name',
         'acc_style_product',
         'acc_style_scope',
         'acc_style_datatype',
         'acc_style_subtype',
-        'acc_style_product',
+        'acc_style_product',    
         'acc_style_category',
         'acc_style_number',
         'acc_style_reference',

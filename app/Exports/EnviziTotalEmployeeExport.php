@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziEmployeeExport extends BaseCSRExportFormat1
+class EnviziTotalEmployeeExport extends BaseCSRExportFormat2
 {
-    private const STYLE = 'CSR Employee - Direct';
+    private const STYLE = 'CSR Employee - Employee Total';
 
     public function __construct($companyId)
     {

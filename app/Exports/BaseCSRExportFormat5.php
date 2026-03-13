@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormat2 implements FromCollection, WithHeadings
+class BaseCSRExportFormat5 implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $accountStyle;
@@ -37,41 +37,37 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
         $sub = $this->db->table('data_csr as csr')
         ->select([
             'csr.location',
-            DB::raw("'' as location_ref"),
             DB::raw("DATE(csr.created_utc_date) as created_utc_date"),
             DB::raw("DATE(csr.modified_utc_date) as modified_utc_date"),
-            DB::raw("'CSR Employee - Employee Total' as account_style"),
-        ]) 
-        ->selectRaw('SUM(csr.employee_total) as employee_total')
-        ->selectRaw('SUM(csr.male) as male')
-        ->selectRaw('SUM(csr.female) as female')
-        ->selectRaw('SUM(csr.k30_th) as k30_th')
-        ->selectRaw('SUM(csr.thirty_to_50_th) as thirty_to_50_th')
-        ->selectRaw('SUM(csr.more_than_50_th) as more_than_50_th')
-        ->selectRaw('SUM(csr.phd) as phd')
-        ->selectRaw('SUM(csr.postgraduate) as postgraduate')
-        ->selectRaw('SUM(csr.undergraduate) as undergraduate')
-        ->selectRaw('SUM(csr.diploma) as diploma')
-        ->selectRaw('SUM(csr.high_school) as high_school')
-        ->selectRaw('SUM(csr.junior_high_school) as junior_high_school')
-        ->selectRaw('SUM(csr.elementary_school) as elementary_school')
-        ->selectRaw('SUM(csr.others) as others')
-        ->selectRaw('SUM(csr.islam) as islam')
-        ->selectRaw('SUM(csr.kristen) as kristen')
-        ->selectRaw('SUM(csr.katolik) as katolik')
-        ->selectRaw('SUM(csr.hindu) as hindu')
-        ->selectRaw('SUM(csr.budha) as budha')
-        ->selectRaw('SUM(csr.konghucu) as konghucu')
-        ->groupBy(
+            DB::raw("'CSR Employee - Total per cat' as account_style"),
+        ])
+        ->selectRaw("SUM(employee_total) AS TotalEmployee")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Direct', csr.employee_total,0)) as Direct")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Indirect', csr.employee_total,0)) as InDirect")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 4', csr.employee_total,0)) as Level4")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 5', csr.employee_total,0)) as Level5")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 6', csr.employee_total,0)) as Level6")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 7', csr.employee_total,0)) as Level7")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 8', csr.employee_total,0)) as Level8")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Middle Management', csr.employee_total,0)) as MidManage")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Permanent', csr.employee_total,0)) as Permanent")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Senior Management', csr.employee_total,0)) as SnrManage")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Staff', csr.employee_total,0)) as Staff")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Death', csr.employee_total,0)) as TODeath")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Others', csr.employee_total,0)) as TOOthers")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Resignation', csr.employee_total,0)) as TOResign")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Retirement', csr.employee_total,0)) as TORetire")
+         ->groupBy(
                     'csr.location',
                     DB::raw('DATE(csr.created_utc_date)'),
                     DB::raw('DATE(csr.modified_utc_date)')
                 );
-
         return $this->db->query()
             ->fromSub($sub, 'csr')
             ->leftJoin('account_styles as acc', 'acc.acc_style_caption', '=', 'csr.account_style')
+            ->leftjoin('locations as loc','loc.location_name','=','csr.location')
             ->select('csr.*', 'acc.acc_style_link')
+            ->whereNotNull('loc.location_name')
             ->get()
             ->map(function ($row) {
                 return [
@@ -89,27 +85,22 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
                     $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
-                    $row->employee_total ?? 0,
-                    $row->male ?? 0,
-                    $row->female ?? 0,
-                    $row->k30_th ?? 0,
-                    $row->thirty_to_50_th ?? 0,
-                    $row->more_than_50_th ?? 0,
-                    $row->phd ?? 0,
-                    $row->postgraduate ?? 0,
-                    $row->undergraduate ?? 0,
-                    $row->diploma ?? 0,
-                    $row->high_school ?? 0,
-                    $row->junior_high_school ?? 0,
-                    $row->elementary_school ?? 0,
-                    $row->others ?? 0,
-                    $row->islam ?? 0,
-                    $row->kristen ?? 0,
-                    $row->katolik ?? 0,
-                    $row->hindu ?? 0,
-                    $row->budha ?? 0,
-                    $row->konghucu ?? 0,
-                    $row->employee_total ?? 0
+                    $row->TotalEmployee, 
+                    $row->Direct,
+                    $row->InDirect, 
+                    $row->Level4, 
+                    $row->Level5,
+                    $row->Level6,
+                    $row->Level7,
+                    $row->Level8,
+                    $row->MidManage,
+                    $row->Permanent,
+                    $row->SnrManage,
+                    $row->Staff,
+                    $row->TODeath,
+                    $row->TOOthers,
+                    $row->TOResign,
+                    $row->TORetire 
                 ];
             });
     }
@@ -135,28 +126,23 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
             'Record Subtype',
             'Record Entry Method',
             'Record Reference',
-            'Record Invoice Number',
-            'Employees (Number)',
-            'Male',
-            'Female',
-            'Under30yr',
-            '30to50yr',
-            'Above50yr',
-            'PhD',
-            'Postgraduate',
-            'Undergraduate',
-            'Diploma',
-            'High School',
-            'Junior High School',
-            'Elementry School',
-            'Others',
-            'Moslem',
-            'Christian',
-            'Catholic',
-            'Hindu',
-            'Buddha',
-            'Konghucu',
-            'Total Employee'
+            'Record Invoice Number', 
+            'Total Employee',
+            'Direct',
+            'In direct',
+            'Level 4',
+            'Level 5',
+            'Level 6',
+            'Level 7',
+            'Level 8',
+            'Middle Management',
+            'Permanent',
+            'Senior Management',
+            'Staff',
+            'Turnover Death',
+            'Turnover Others',
+            'Turnover Resignation',
+            'Turnover Retirement',
         ];
     }
 }

@@ -23,28 +23,32 @@ class CSRExportService
     public function generateAll(int $companyId): array
     {
         $this->connector->setDynamicConnection($companyId); 
-        $date = Carbon::now('Asia/Jakarta')->format('Ymd');
+        $date = Carbon::now('Asia/Jakarta')->format('Y');
 
-        $exports = [
-            \App\Exports\EnviziDirectExport::class          => "Account_Setup_and_Data_Load direct_{$date}.xlsx", 
-            \App\Exports\EnviziIndirectExport::class        => "Account_Setup_and_Data_Load indirect_{$date}.xlsx", 
-            \App\Exports\EnviziMidMGTExport::class          => "Account_Setup_and_Data_Load Mid Mngmt_{$date}.xlsx", 
-            \App\Exports\EnviziPermanentExport::class       => "Account_Setup_and_Data_Load Permanent_{$date}.xlsx", 
-            \App\Exports\EnviziSeniorMGTExport::class       => "Account_Setup_and_Data_Load Senior mngmt_{$date}.xlsx",
-            \App\Exports\EnviziStaffExport::class           => "Account_Setup_and_Data_Load Staff_{$date}.xlsx",
-            \App\Exports\EnviziDeathExport::class          => "Account_Setup_and_Data_Load TO death_{$date}.xlsx",
-            \App\Exports\EnviziOthersExport::class         => "Account_Setup_and_Data_Load TO Others_{$date}.xlsx",
-            \App\Exports\EnviziResignmentExport::class      => "Account_Setup_and_Data_Load TO Resign_{$date}.xlsx",
-            \App\Exports\EnviziRetireExport::class         => "Account_Setup_and_Data_Load TO Retire_{$date}.xlsx",
-            \App\Exports\EnviziSHEExport::class         => "Account_Setup_and_Data_Load SHE_{$date}.xlsx",
-            \App\Exports\EnviziEmployeeExport::class        => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
-            \App\Exports\EnviziTOCEduExport::class        => "Account_Setup_and_Data_Load TOC - edu_{$date}.xlsx",
-            \App\Exports\EnviziTOCLifeliLIMExport::class        => "Account_Setup_and_Data_Load TOC - Lifeli LIM_{$date}.xlsx",
-            \App\Exports\EnviziTOCLiveliEduLiExport::class        => "Account_Setup_and_Data_Load TOC - Liveli Edu Li_{$date}.xlsx",
-            \App\Exports\EnviziTOCLiveliLBMExport::class        => "Account_Setup_and_Data_Load TOC - liveli LBM_{$date}.xlsx",
-            \App\Exports\EnviziTotalPeCatExport::class        => "Account_Setup_and_Data_Load total pe cat_{$date}.xlsx",
-
-            // tambahkan 12 lainnya di sini
+        $exports = [ 
+            //BaseCSRExportFormat1 
+            \App\Exports\EnviziDirectExport::class     => "Account_Setup_and_Data_Load direct_{$date}.xlsx", 
+            \App\Exports\EnviziIndirectExport::class   => "Account_Setup_and_Data_Load indirect_{$date}.xlsx", 
+            \App\Exports\EnviziMidMGTExport::class     => "Account_Setup_and_Data_Load Mid Mngmt_{$date}.xlsx", 
+            \App\Exports\EnviziPermanentExport::class  => "Account_Setup_and_Data_Load Permanent_{$date}.xlsx", 
+            \App\Exports\EnviziSeniorMGTExport::class  => "Account_Setup_and_Data_Load Senior mngmt_{$date}.xlsx",
+            \App\Exports\EnviziStaffExport::class      => "Account_Setup_and_Data_Load Staff_{$date}.xlsx",
+            \App\Exports\EnviziDeathExport::class      => "Account_Setup_and_Data_Load TO death_{$date}.xlsx",
+            \App\Exports\EnviziOthersExport::class     => "Account_Setup_and_Data_Load TO Others_{$date}.xlsx",
+            \App\Exports\EnviziResignmentExport::class => "Account_Setup_and_Data_Load TO Resign_{$date}.xlsx",
+            \App\Exports\EnviziRetireExport::class     => "Account_Setup_and_Data_Load TO Retire_{$date}.xlsx",
+            //BaseCSRExportFormat2
+            \App\Exports\EnviziTotalEmployeeExport::class   => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
+            //BaseCSRExportFormat3
+            \App\Exports\EnviziSHEExport::class        => "Account_Setup_and_Data_Load SHE_{$date}.xlsx",
+            //BaseCSRExportFormat4 
+            \App\Exports\EnviziTOCEduExport::class         => "Account_Setup_and_Data_Load TOC - edu_{$date}.xlsx",
+            \App\Exports\EnviziTOCLifeliLIMExport::class   => "Account_Setup_and_Data_Load TOC - Lifeli LIM_{$date}.xlsx",
+            \App\Exports\EnviziTOCLiveliEduLiExport::class => "Account_Setup_and_Data_Load TOC - Liveli Edu Li_{$date}.xlsx",
+            \App\Exports\EnviziTOCLiveliLBMExport::class   => "Account_Setup_and_Data_Load TOC - liveli LBM_{$date}.xlsx",
+            //BaseCSRExportFormat5
+            \App\Exports\EnviziTotalPeCatExport::class     => "Account_Setup_and_Data_Load total pe cat_{$date}.xlsx",
+ 
         ];
 
         $generatedFiles = [];
