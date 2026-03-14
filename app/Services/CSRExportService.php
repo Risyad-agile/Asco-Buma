@@ -37,6 +37,13 @@ class CSRExportService
             \App\Exports\EnviziOthersExport::class     => "Account_Setup_and_Data_Load TO Others_{$date}.xlsx",
             \App\Exports\EnviziResignmentExport::class => "Account_Setup_and_Data_Load TO Resign_{$date}.xlsx",
             \App\Exports\EnviziRetireExport::class     => "Account_Setup_and_Data_Load TO Retire_{$date}.xlsx",
+            \App\Exports\EnviziLevel4Export::class     => "Account_Setup_and_Data_Load Level4_{$date}.xlsx",
+            \App\Exports\EnviziLevel5Export::class     => "Account_Setup_and_Data_Load Level5_{$date}.xlsx",
+            \App\Exports\EnviziLevel6Export::class     => "Account_Setup_and_Data_Load Level6_{$date}.xlsx",
+            \App\Exports\EnviziLevel7Export::class     => "Account_Setup_and_Data_Load Level7_{$date}.xlsx",
+            \App\Exports\EnviziLevel8Export::class     => "Account_Setup_and_Data_Load Level8_{$date}.xlsx",
+            \App\Exports\EnviziBlueCollarExport::class => "Account_Setup_and_Data_Load BlueCollar_{$date}.xlsx",
+            
             //BaseCSRExportFormat2
             \App\Exports\EnviziTotalEmployeeExport::class   => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
             //BaseCSRExportFormat3

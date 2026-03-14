@@ -41,9 +41,13 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
             DB::raw("DATE(csr.modified_utc_date) as modified_utc_date"),
             DB::raw("'CSR Employee - Total per cat' as account_style"),
         ])
-        ->selectRaw("SUM(employee_total) AS TotalEmployee")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Direct', csr.employee_total,0)) as Direct")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Indirect', csr.employee_total,0)) as InDirect")
+        ->selectRaw("
+                        SUM(IF(csr.account_style = 'CSR Employee - Direct', csr.employee_total,0)) +
+                        SUM(IF(csr.account_style = 'CSR Employee - Indirect', csr.employee_total,0))
+                        as TotalEmployee
+                    ")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 4', csr.employee_total,0)) as Level4")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 5', csr.employee_total,0)) as Level5")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 6', csr.employee_total,0)) as Level6")
@@ -57,6 +61,7 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Others', csr.employee_total,0)) as TOOthers")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Resignation', csr.employee_total,0)) as TOResign")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Retirement', csr.employee_total,0)) as TORetire")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Blue Collar', csr.employee_total,0)) as BCollar")
          ->groupBy(
                     'csr.location',
                     DB::raw('DATE(csr.created_utc_date)'),
@@ -78,14 +83,14 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
                     $row->acc_style_link ?? '', // Account Style Link
                     $row->account_style ?? '',
                     'Default',           // Account Subtype
-                    '-',                 //$row->account_number ?? '',
+                    ($row->account_style ?? '') . '_' . ($row->location ?? ''), // Account Number
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
                     $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
                     $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
-                    $row->TotalEmployee, 
+                    $row->TotalEmployee, // Total Employee
                     $row->Direct,
                     $row->InDirect, 
                     $row->Level4, 
@@ -100,7 +105,8 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
                     $row->TODeath,
                     $row->TOOthers,
                     $row->TOResign,
-                    $row->TORetire 
+                    $row->TORetire,
+                    $row->BCollar 
                 ];
             });
     }
@@ -143,6 +149,7 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
             'Turnover Others',
             'Turnover Resignation',
             'Turnover Retirement',
+            'Blue Collar'
         ];
     }
 }

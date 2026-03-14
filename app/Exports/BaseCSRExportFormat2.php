@@ -71,7 +71,9 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
         return $this->db->query()
             ->fromSub($sub, 'csr')
             ->leftJoin('account_styles as acc', 'acc.acc_style_caption', '=', 'csr.account_style')
+            ->leftjoin('locations as loc','loc.location_name','=','csr.location')
             ->select('csr.*', 'acc.acc_style_link')
+            ->whereNotNull('loc.location_name')
             ->get()
             ->map(function ($row) {
                 return [
@@ -82,7 +84,7 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     $row->acc_style_link ?? '', // Account Style Link
                     $row->account_style ?? '',
                     'Default',           // Account Subtype
-                    '-',                 //$row->account_number ?? '',
+                    ($row->account_style ?? '') . '_' . ($row->location ?? ''), // Account Number
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
