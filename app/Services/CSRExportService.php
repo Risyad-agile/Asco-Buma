@@ -43,19 +43,21 @@ class CSRExportService
             \App\Exports\EnviziLevel7Export::class     => "Account_Setup_and_Data_Load Level7_{$date}.xlsx",
             \App\Exports\EnviziLevel8Export::class     => "Account_Setup_and_Data_Load Level8_{$date}.xlsx",
             \App\Exports\EnviziBlueCollarExport::class => "Account_Setup_and_Data_Load BlueCollar_{$date}.xlsx",
-            
             //BaseCSRExportFormat2
-            \App\Exports\EnviziTotalEmployeeExport::class   => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
+            \App\Exports\EnviziTotalEmployeeExport::class  => "Account_Setup_and_Data_Load Employee total_{$date}.xlsx",
             //BaseCSRExportFormat3
-            \App\Exports\EnviziSHEExport::class        => "Account_Setup_and_Data_Load SHE_{$date}.xlsx",
-            //BaseCSRExportFormat4 
+            \App\Exports\EnviziSHEExport::class            => "Account_Setup_and_Data_Load SHE_{$date}.xlsx",
+            //BaseCSRExportFormatCat
+            \App\Exports\EnviziTotalPeCatExport::class     => "Account_Setup_and_Data_Load total pe cat_{$date}.xlsx",
+            //BaseCSRExportFormatTRN
+            \App\Exports\EnviziTrainingExport::class       => "Account_Setup_and_Data_Load_Training_{$date}.xlsx",
+            \App\Exports\EnviziTrainingTotalExport::class  => "Account_Setup_and_Data_Load_TrainingTotal_{$date}.xlsx",
+            //BaseCSRExportFormatTOC 
             \App\Exports\EnviziTOCEduExport::class         => "Account_Setup_and_Data_Load TOC - edu_{$date}.xlsx",
             \App\Exports\EnviziTOCLifeliLIMExport::class   => "Account_Setup_and_Data_Load TOC - Lifeli LIM_{$date}.xlsx",
-            \App\Exports\EnviziTOCLiveliEduLiExport::class => "Account_Setup_and_Data_Load TOC - Liveli Edu Li_{$date}.xlsx",
+            \App\Exports\EnviziTOCSocLicOpExport::class    => "Account_Setup_and_Data_Load TOC - Social LicOp_{$date}.xlsx",
             \App\Exports\EnviziTOCLiveliLBMExport::class   => "Account_Setup_and_Data_Load TOC - liveli LBM_{$date}.xlsx",
-            //BaseCSRExportFormat5
-            \App\Exports\EnviziTotalPeCatExport::class     => "Account_Setup_and_Data_Load total pe cat_{$date}.xlsx",
- 
+
         ];
 
         $generatedFiles = [];

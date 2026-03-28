@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziTotalPeCatExport extends BaseCSRExportTotalCat
+class EnviziTrainingExport extends BaseCSRExportFormatTRN
 {
-    private const STYLE = 'CSR Employee - Total per cat';
+    private const STYLE = 'CSR Training';
 
     public function __construct($companyId)
     {

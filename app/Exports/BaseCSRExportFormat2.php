@@ -35,14 +35,18 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
     public function collection()
     {
         $sub = $this->db->table('data_csr as csr')
+        ->whereIn('csr.account_style', [
+                'CSR Employee - Direct',
+                'CSR Employee - Indirect'
+                ])
         ->select([
             'csr.location',
             DB::raw("'' as location_ref"),
             DB::raw("DATE(csr.created_utc_date) as created_utc_date"),
             DB::raw("DATE(csr.modified_utc_date) as modified_utc_date"),
             DB::raw("'CSR Employee - Employee Total' as account_style"),
-        ]) 
-        ->selectRaw('SUM(csr.employee_total) as employee_total')
+        ])  
+        ->selectRaw('sum(csr.employee_total) as employee_total')
         ->selectRaw('SUM(csr.male) as male')
         ->selectRaw('SUM(csr.female) as female')
         ->selectRaw('SUM(csr.k30_th) as k30_th')

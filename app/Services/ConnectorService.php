@@ -88,6 +88,120 @@ class ConnectorService
 
         return $data;
     }    
+
+
+    public function fetchTRNFromSource($companyId): array
+    {
+        // 1️⃣ ambil config dari DB
+        $source = ConnectorSource::where('comp_id', $companyId)
+                    ->where('local_table', 'DATA_TRN')
+                    ->where('is_active', true)
+                    ->firstOrFail();
+
+        $config = $source->config_json;
+
+        // handle double encoded JSON
+        if (is_string($config)) {
+
+            $decoded = json_decode($config, true);
+
+            if (is_string($decoded)) {
+                $decoded = json_decode($decoded, true);
+            }
+
+            $config = $decoded;
+        }
+
+        if (!$config) {
+            throw new \Exception("Config JSON kosong untuk DATA_TRN");
+        }
+
+        Log::info("🚀 Fetch TRN - Company {$companyId}");
+
+        // 2️⃣ panggil API
+        $response = $this->fetchFromClient($config);
+
+        if (($response['status'] ?? '') !== 'success') {
+            throw new \Exception("Fetch TRN gagal dari client");
+        }
+
+        $data = $response['data'] ?? [];
+
+        // 3️⃣ normalisasi struktur response
+        if (isset($data['result']['content']['data'])) {
+            $data = $data['result']['content']['data'];
+        } elseif (isset($data['data'])) {
+            $data = $data['data'];
+        }
+
+        if (!is_array($data)) {
+            throw new \Exception("Response TRN bukan array valid");
+        }
+
+        Log::info("✅ TRN fetched successfully", [
+            'company_id' => $companyId,
+            'total_rows' => count($data)
+        ]);
+
+        return $data;
+    }
+
+
+    public function fetchTOCFromSource($companyId): array
+    {
+        // 1️⃣ ambil config dari DB
+        $source = ConnectorSource::where('comp_id', $companyId)
+                    ->where('local_table', 'DATA_TOC')
+                    ->where('is_active', true)
+                    ->firstOrFail();
+
+        $config = $source->config_json;
+
+        // handle double encoded JSON
+        if (is_string($config)) {
+
+            $decoded = json_decode($config, true);
+
+            if (is_string($decoded)) {
+                $decoded = json_decode($decoded, true);
+            }
+
+            $config = $decoded;
+        }
+
+        if (!$config) {
+            throw new \Exception("Config JSON kosong untuk DATA_TOC");
+        }
+
+        Log::info("🚀 Fetch TOC - Company {$companyId}");
+
+        // 2️⃣ panggil API
+        $response = $this->fetchFromClient($config);
+
+        if (($response['status'] ?? '') !== 'success') {
+            throw new \Exception("Fetch TOC gagal dari client");
+        }
+
+        $data = $response['data'] ?? [];
+
+        // 3️⃣ normalisasi struktur response (penting karena beda-beda API)
+        if (isset($data['result']['content']['data'])) {
+            $data = $data['result']['content']['data'];
+        } elseif (isset($data['data'])) {
+            $data = $data['data'];
+        }
+
+        if (!is_array($data)) {
+            throw new \Exception("Response TOC bukan array valid");
+        }
+
+        Log::info("✅ TOC fetched successfully", [
+            'company_id' => $companyId,
+            'total_rows' => count($data)
+        ]);
+
+        return $data;
+    }
     /**
      * Call external API client
      */

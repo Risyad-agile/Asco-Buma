@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormat5 implements FromCollection, WithHeadings
+class BaseCSRExportTotalCat implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $accountStyle;
@@ -62,7 +62,7 @@ class BaseCSRExportFormat5 implements FromCollection, WithHeadings
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Resignation', csr.employee_total,0)) as TOResign")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Retirement', csr.employee_total,0)) as TORetire")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Blue Collar', csr.employee_total,0)) as BCollar")
-         ->groupBy(
+        ->groupBy(
                     'csr.location',
                     DB::raw('DATE(csr.created_utc_date)'),
                     DB::raw('DATE(csr.modified_utc_date)')
