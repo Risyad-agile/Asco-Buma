@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-class EnviziTOCSocLicOpExport extends BaseCSRExportFormatTOC
+class EnviziTOCSocialLOExport extends BaseCSRExportFormatTOC
 {
     private const PROBLEM_CATEGORY = 'Social License To Operate';// tidak ada style khusus untuk TOC liveli edu li, jadi pakai style umum saja
 

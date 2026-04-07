@@ -55,9 +55,9 @@ class CSRExportService
             //BaseCSRExportFormatTOC 
             \App\Exports\EnviziTOCEduExport::class         => "Account_Setup_and_Data_Load TOC - edu_{$date}.xlsx",
             \App\Exports\EnviziTOCLifeliLIMExport::class   => "Account_Setup_and_Data_Load TOC - Lifeli LIM_{$date}.xlsx",
-            \App\Exports\EnviziTOCSocLicOpExport::class    => "Account_Setup_and_Data_Load TOC - Social LicOp_{$date}.xlsx",
+            \App\Exports\EnviziTOCSocialLOExport::class    => "Account_Setup_and_Data_Load Social LO_{$date}.xlsx",
             \App\Exports\EnviziTOCLiveliLBMExport::class   => "Account_Setup_and_Data_Load TOC - liveli LBM_{$date}.xlsx",
-
+            \App\Exports\EnviziTOCWellbeingExport::class   => "Account_Setup_and_Data_Load Wellbeing_{$date}.xlsx",
         ];
 
         $generatedFiles = [];
