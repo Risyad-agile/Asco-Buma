@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-class EnviziDeathExport extends BaseCSRExportFormat1
+class EnviziDeathExport extends BaseCSRExportTurnOverFormat
 {
     private const STYLE = 'CSR Employee - Turnover - Death';
 

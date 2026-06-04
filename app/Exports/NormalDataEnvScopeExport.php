@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Exports;
 
 use App\Models\DataEnv;
@@ -22,16 +23,27 @@ class NormalDataEnvScopeExport implements FromQuery, WithHeadings, WithTitle, Wi
     public function headings(): array
     {
         return [
-            'Organization',              
+            // 'Organization Link',
+            'Organization',
             'Location',
+            // 'Location Ref',
+            // 'Account Style Link',
             'Account Style Caption',
+            // 'Account Subtype',
             'Account Number',
             'Account Reference',
             'Account Supplier',
+            // 'Account Reader',
             'Record Start YYYY-MM-DD',
             'Record End YYYY-MM-DD',
+
             'Quantity',
             'Total cost (incl. Tax) in local currency',
+            
+            // 'Record Billing Type',
+            // 'Record Subtype',
+            // 'Record Entry Method',
+
             'Record Reference',
             'Record Invoice Number',
             'Record Data Quality',
@@ -49,32 +61,37 @@ class NormalDataEnvScopeExport implements FromQuery, WithHeadings, WithTitle, Wi
     public function map($row): array
     {
         return [
-            // $row->organization,
-            "PT Anagile Kharisma Utama_POC", // Fixed value for Organization for development/testing
+            // '8000168', // Organization Link
+            'PT. Buma International Group Tbk.', // Fixed value for Organization for development/testing
             $row->location,
-            $row->account_style_caption,
-            $row->account_number,
-            $row->account_reference,
-            $row->account_supplier,
+            // '', // Location Ref
+            // $row->account_style_link ?? '41961', // Account Style Link
+            $row->account_style_caption, // Account Style Caption
+            // $row->account_subtype ?? 'Default', // Account Subtype
+            $row->account_number, // Account Number
+            $row->account_reference, // Account Reference
+            $row->account_supplier, // Account Supplier
+            // $row->account_reader, // Account Reader
 
-            $row->record_start ? ExcelDate::dateTimeToExcel($row->record_start->startOfDay()) : null,
-            $row->record_end   ? ExcelDate::dateTimeToExcel($row->record_end->startOfDay()) : null,
+            $row->record_start ? substr($row->record_start, 0, 10) : '',
+            $row->record_end   ? substr($row->record_end, 0, 10) : '',
 
             $row->quantity,
             $row->total_cost_incl_tax_local_currency,
+            
+            // $row->record_billing_type ?? 'Standard', // Record Billing Type
+            // $row->record_subtype ?? '', // Record Subtype
+            // $row->record_entry_method ?? 'Overwrite', // Record Entry Method
             $row->record_reference,
             $row->record_invoice_number,
-            $row->record_data_quality,
+            $row->record_data_quality ?? 'Actual', // Record Data Quality
+            
         ];
     }
 
-    // ✅ Force the display format exactly like your screenshot
     public function columnFormats(): array
     {
-        return [
-            'G' => NumberFormat::FORMAT_DATE_YYYYMMDD2, // Record Start
-            'H' => NumberFormat::FORMAT_DATE_YYYYMMDD2, // Record End
-        ];
+        return [];
     }
 
     public function title(): string

@@ -36,8 +36,17 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
     {
         $sub = $this->db->table('data_csr as csr')
         ->whereIn('csr.account_style', [
-                'CSR Employee - Direct',
-                'CSR Employee - Indirect'
+                'CSR Employee - Level 2',
+                'CSR Employee - Level 3',
+                'CSR Employee - Level 4',
+                'CSR Employee - Level 6',
+                'CSR Employee - Level 7',
+                'CSR Employee - Level 8',
+                'CSR Employee - Indirect',
+                'CSR Employee - Turnover - Death',
+                'CSR Employee - Turnover - Others',
+                'CSR Employee - Turnover - Resignation',
+                'CSR Employee - Turnover - Retirement',
                 ])
         ->select([
             'csr.location',
@@ -108,14 +117,12 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     $row->high_school ?? 0,
                     $row->junior_high_school ?? 0,
                     $row->elementary_school ?? 0,
-                    $row->others ?? 0,
                     $row->islam ?? 0,
                     $row->kristen ?? 0,
                     $row->katolik ?? 0,
                     $row->hindu ?? 0,
                     $row->budha ?? 0,
-                    $row->konghucu ?? 0,
-                    $row->employee_total ?? 0
+                    $row->konghucu ?? 0
                 ];
             });
     }
@@ -155,14 +162,12 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
             'High School',
             'Junior High School',
             'Elementry School',
-            'Others',
             'Moslem',
             'Christian',
             'Catholic',
             'Hindu',
             'Buddha',
-            'Konghucu',
-            'Total Employee'
+            'Konghucu'
         ];
     }
 }

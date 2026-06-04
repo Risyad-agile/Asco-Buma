@@ -387,3 +387,9 @@ Route::group(['prefix' => 'partner-manager', 'middleware' => ['role:superadmin|m
 //     Route::put('task/approval/submit/{id}',[TasksController::class,'approvalSubmit'])->name('partner.task.approval.submit');
 //     Route::post('task/approval/reject',[TasksController::class,'approvalReject'])->name('partner.task.approval.reject');
 // });
+// Route::group(['prefix' => 'asri-core', 'middleware' => ['role:superadmin|agile-manager']], function() {
+//     Route::get('integration-log/browse', [IntegrationLogController::class, 'browse'])->name('integration_log.browse');
+//     Route::get('integration-log/list', [IntegrationLogController::class, 'list'])->name('integration_log.list');
+//     Route::post('integration-log/main', [IntegrationLogController::class, 'main'])->name('integration_log.main');
+//     Route::get('integration-log/detail/{id}', [IntegrationLogController::class, 'detail'])->name('integration_log.detail');
+// });

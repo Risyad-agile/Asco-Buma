@@ -7,6 +7,8 @@ use App\Models\DataEnv;
 use App\Models\AccountStyles;
 use App\Exports\NormalDataEnvScopeExport;
 use App\Exports\SpecialDataEnvScopeExport;
+use App\Exports\BiodieselDataEnvScopeExport;
+use App\Exports\TotalOBandCoalEnvScopeExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Services\IntegrationLogger;
@@ -25,7 +27,7 @@ class CreateDataEnvScopeExport extends Command
         $scopes = $this->option('scope');
 
         if (empty($scopes)) {
-            $scopes = [1, 2, 3];
+            $scopes = [1, 2, 3, 4];
         }
 
         // ✅ Start run log (DB)
@@ -97,11 +99,23 @@ class CreateDataEnvScopeExport extends Command
 
                     $specialIds = [];
                     $normalIds  = [];
+                    $biodieselIds = [];
+                    $totalOBandCoalIds = [];
 
                     foreach ($rows as $row) {
                         $style = $styles[$row->account_style_caption] ?? null;
 
-                        if ($style && strtoupper((string) $style->acc_style_xls_format) === 'SPECIAL') {
+                        // 🎯 Biodiesel B35
+                        if ($row->account_style_caption === 'S1 - Biodiesel B35 - L') {
+                            $biodieselIds[] = $row->id;
+                        }
+
+                        // 🎯 Total OB & Coal
+                        elseif ($row->account_style_caption === 'Total OB Removal and Coal Production (Ton)') {
+                            $totalOBandCoalIds[] = $row->id;
+                        }
+                        // 🔥 EXISTING LOGIC
+                        elseif ($style && strtoupper((string) $style->acc_style_xls_format) === 'SPECIAL') {
                             $specialIds[] = $row->id;
                         } else {
                             $normalIds[] = $row->id;
@@ -123,7 +137,7 @@ class CreateDataEnvScopeExport extends Command
                     if (!empty($specialIds)) {
 
                         $filename = sprintf(
-                            'Account_Setup_and_Data_Load_Special_Scope%d_%s_batch%03d.xlsx',
+                            'POC Account Setup and Data Load Special Scope%d %s batch%03d.xlsx',
                             $scope,
                             now()->format('Ymd_His'),
                             $batch
@@ -147,8 +161,6 @@ class CreateDataEnvScopeExport extends Command
                         $s3Key = $prefix . $filename;
 
                         Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-
-                        // verify upload
                         $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
                         $this->info("☁ Uploaded SPECIAL to Envizi S3: {$s3Key}");
@@ -173,7 +185,7 @@ class CreateDataEnvScopeExport extends Command
                     if (!empty($normalIds)) {
 
                         $filename = sprintf(
-                            'POCAccountSetupandDataLoad_Scope%d_%s_batch%03d.xlsx',
+                            'POC Account Setup and Data Load Normal Scope%d %s batch%03d.xlsx',
                             $scope,
                             now()->format('Ymd_His'),
                             $batch
@@ -197,7 +209,6 @@ class CreateDataEnvScopeExport extends Command
                         $s3Key = $prefix . $filename;
 
                         Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-
                         $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
                         $this->info("☁ Uploaded NORMAL to Envizi S3: {$s3Key}");
@@ -214,6 +225,102 @@ class CreateDataEnvScopeExport extends Command
 
                         $totalFiles++;
                         $totalRows += count($normalIds);
+                    }
+
+                    // ===============================
+                    // BIODIESEL EXPORT 
+                    // ===============================
+                    if (!empty($biodieselIds)) {
+
+                        $filename = sprintf(
+                            'Account_Setup_and_Data_Load_S1_Biodiesel_B35_L_%d_%s_batch%03d.xlsx',
+                            $scope,
+                            now()->format('Ymd_His'),
+                            $batch
+                        );
+
+                        $localPath = 'exports/' . $filename;
+
+                        Excel::store(new BiodieselDataEnvScopeExport($biodieselIds), $localPath, 'local');
+
+                        $this->info("⚙ BIODIESEL exported: " . count($biodieselIds) . " → {$filename}");
+
+                        $logger->log($run, 'file_exported', 'BIODIESEL exported locally', [
+                            'scope' => $scope,
+                            'batch' => $batch,
+                            'type'  => 'BIODIESEL',
+                            'filename' => $filename,
+                            'count' => count($biodieselIds),
+                            'localPath' => $localPath,
+                        ]);
+
+                        $s3Key = $prefix . $filename;
+
+                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+
+                        $this->info("☁ Uploaded BIODIESEL to Envizi S3: {$s3Key}");
+
+                        $logger->log($run, 's3_uploaded', 'BIODIESEL uploaded to Envizi S3', [
+                            'scope' => $scope,
+                            'batch' => $batch,
+                            'type'  => 'BIODIESEL',
+                            'filename' => $filename,
+                            's3_key' => $s3Key,
+                            'count' => count($biodieselIds),
+                            'verified' => $exists,
+                        ], $exists ? 'info' : 'warning');
+
+                        $totalFiles++;
+                        $totalRows += count($biodieselIds);
+                    }
+
+                    // ===============================
+                    // TOTAL OB & COAL EXPORT 
+                    // ===============================
+                    if (!empty($totalOBandCoalIds)) {
+
+                        $filename = sprintf(
+                            'Account_Setup_and_Data_Load_Total_OB_&_Coal_Production_%d_%s_batch%03d.xlsx',
+                            $scope,
+                            now()->format('Ymd_His'),
+                            $batch
+                        );
+
+                        $localPath = 'exports/' . $filename;
+
+                        Excel::store(new TotalOBandCoalEnvScopeExport($totalOBandCoalIds), $localPath, 'local');
+
+                        $this->info("⚙ TOTAL OB & COAL exported: " . count($totalOBandCoalIds) . " → {$filename}");
+
+                        $logger->log($run, 'file_exported', 'TOTAL OB & COAL exported locally', [
+                            'scope' => $scope,
+                            'batch' => $batch,
+                            'type'  => 'TOTAL OB & COAL',
+                            'filename' => $filename,
+                            'count' => count($totalOBandCoalIds),
+                            'localPath' => $localPath,
+                        ]);
+
+                        $s3Key = $prefix . $filename;
+
+                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+
+                        $this->info("☁ Uploaded TOTAL OB & COAL to Envizi S3: {$s3Key}");
+
+                        $logger->log($run, 's3_uploaded', 'TOTAL OB & COAL uploaded to Envizi S3', [
+                            'scope' => $scope,
+                            'batch' => $batch,
+                            'type'  => 'TOTAL OB & COAL',
+                            'filename' => $filename,
+                            's3_key' => $s3Key,
+                            'count' => count($totalOBandCoalIds),
+                            'verified' => $exists,
+                        ], $exists ? 'info' : 'warning');
+
+                        $totalFiles++;
+                        $totalRows += count($totalOBandCoalIds);
                     }
 
                     // Mark all rows in this batch as exported
@@ -246,7 +353,6 @@ class CreateDataEnvScopeExport extends Command
             ]);
 
             return self::SUCCESS;
-
         } catch (\Throwable $e) {
 
             // ✅ Failure stored in DB (and includes trace in logger->fail)

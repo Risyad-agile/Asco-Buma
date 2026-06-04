@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziOthersExport extends BaseCSRExportTurnOverFormat
+class EnviziImplementationCostExport extends BaseCSRExportFormatImplementationCost
 {
-    private const STYLE = 'CSR Employee - Turnover - Others';
+    private const STYLE = 'Implementation Cost';
 
     public function __construct($companyId)
     {

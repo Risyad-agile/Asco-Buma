@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
+class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $category;
@@ -89,14 +89,16 @@ class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
                     'Overwrite',
                     '',
                     '',
-                    $row->T_Student ?? 0,
-                    $row->T_StudentOutcome ?? 0,
-                    $row->T_StudentAdditional ?? 0,
-                    $row->T_Teacher ?? 0,
-                    $row->T_TeacherOutcome ?? 0,
-                    $row->T_TeacherAdditional ?? 0,
+                    $row->T_JobSeeker ?? 0,
+                    $row->T_JobSeekerOutcome ?? 0,
+                    $row->T_JobSeekerAdditional ?? 0,
+                    $row->T_Entrepreneur ?? 0,
+                    $row->T_EntrepreneurOutcome ?? 0,
+                    $row->T_EntrepreneurAdditional ?? 0,
+                    $row->T_Farmer ?? 0,
+                    $row->T_FarmerOutcome ?? 0,
+                    $row->T_FarmerAdditional ?? 0,
                 ];
-                 
             });
     }
 
@@ -122,12 +124,15 @@ class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number',
-            'Student',
-            'Outcome Student',
-            'Outcome Add Student',
-            'Teacher',
-            'Outcome Teacher',
-            'Outcome Add Teacher',
+            'Job Seeker',
+            'Outcome Job Seeker',
+            'Outcome Add Job Seeker',
+            'Entrepreneur',
+            'Outcome Entrepreneur',
+            'Outcome Add Entrepreneur',
+            'Farmer',
+            'Outcome Farmer',
+            'Outcome Add Farmer'            
         ];
     }
 }

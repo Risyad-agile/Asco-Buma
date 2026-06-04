@@ -9,7 +9,7 @@ use App\Services\IntegrationLogger;
 class SyncBumaScope extends Command
 {
     protected $signature = 'sync:buma-scope
-                            {scope : 1|2|3}
+                            {scope : 1|2|3|4}
                             {--org=BIG : Organization code}
                             {--pageSize=100 : Page size}';
 

@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-class EnviziTOCLiveliLBMExport extends BaseCSRExportFormatTOC
+class EnviziTOCLiveliLBMExport extends BaseCSRExportFormatLBM
 {
     private const PROBLEM_CATEGORY = 'Life Beyond Mining';// tidak ada style khusus untuk TOC liveli LBM, jadi pakai style umum saja
 

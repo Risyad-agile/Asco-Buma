@@ -14,11 +14,10 @@ class RunDailyEnviziCSRPipeline extends Command
     {
         $companyId = $this->argument('companyId');
 
-        $this->info("🚀 Starting CSR Envizi pipeline for Company ID: {$companyId}");
+        $this->info("🚀 Starting CSR Envizi pipeline for Company ID: Buma");
 
         $commands = [
-            "csr:fetch {$companyId}",
-            "csr:export-direct {$companyId}",
+            "export:data-csr 2",// for now company is hard-coded to ID 2
         ];
 
         foreach ($commands as $cmd) {

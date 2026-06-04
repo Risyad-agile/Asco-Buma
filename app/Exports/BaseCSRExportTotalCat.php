@@ -61,7 +61,6 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Others', csr.employee_total,0)) as TOOthers")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Resignation', csr.employee_total,0)) as TOResign")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Retirement', csr.employee_total,0)) as TORetire")
-        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Blue Collar', csr.employee_total,0)) as BCollar")
         ->groupBy(
                     'csr.location',
                     DB::raw('DATE(csr.created_utc_date)'),
@@ -105,8 +104,7 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
                     $row->TODeath,
                     $row->TOOthers,
                     $row->TOResign,
-                    $row->TORetire,
-                    $row->BCollar 
+                    $row->TORetire
                 ];
             });
     }
@@ -133,9 +131,9 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number', 
-            'Total Employee',
+            'Employees (Number)',
             'Direct',
-            'In direct',
+            'Indirect',
             'Level 4',
             'Level 5',
             'Level 6',
@@ -148,8 +146,7 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
             'Turnover Death',
             'Turnover Others',
             'Turnover Resignation',
-            'Turnover Retirement',
-            'Blue Collar'
+            'Turnover Retirement'
         ];
     }
 }

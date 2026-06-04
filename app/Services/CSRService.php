@@ -101,7 +101,6 @@ class CSRService
                         ->update($payload);
 
                     $updated++;
-
                 } else {
 
                     $payload['reff_id']   = $reffId;
@@ -111,7 +110,6 @@ class CSRService
 
                     $inserted++;
                 }
-
             } catch (\Exception $e) {
 
                 Log::error("❌ CSR sync error", [
@@ -133,7 +131,7 @@ class CSRService
 
         return compact('inserted', 'updated', 'skipped');
     }
- 
+
     public function syncTRN(array $data, int $companyId): array
     {
         $this->connector->setDynamicConnection($companyId);
@@ -183,6 +181,8 @@ class CSRService
                     // 🔥 pakai helper aman
                     'created_utc_date'      => $this->parseDate($row['createdUtcDate'] ?? null),
                     'modified_utc_date'     => $this->parseDate($row['modifiedUtcDate'] ?? null),
+                    'start_date'            => $row['startDate'] ?? null,
+                    'end_date'              => $row['endDate'] ?? null,
 
                     'updated_at'            => now(),
                 ];
@@ -197,7 +197,6 @@ class CSRService
 
                     $query->update($payload);
                     $updated++;
-
                 } else {
 
                     $payload['created_at'] = now();
@@ -205,7 +204,6 @@ class CSRService
                     $db->table('data_trn')->insert($payload);
                     $inserted++;
                 }
-
             } catch (\Exception $e) {
 
                 Log::error("❌ TOC sync error", [
@@ -228,10 +226,10 @@ class CSRService
         return compact('inserted', 'updated', 'skipped');
     }
 
-     
     public function syncTOC(array $data, int $companyId): array
     {
         // 🔥 set dynamic connection
+        // dd($data);
         $this->connector->setDynamicConnection($companyId);
 
         $db = DB::connection('dynamic');
@@ -242,10 +240,12 @@ class CSRService
 
         try {
 
-            $contents = $data['result']['content'] ?? [];
+            // $contents = $data['result']['content'] ?? [];
+            $contents = $data; // already normalized flat array from fetchTOCFromSource
 
             if (empty($contents)) {
-                throw new \Exception("Data TOC kosong dari API");
+                // throw new \Exception("Data TOC kosong dari API");
+                Log::warning("Data TOC kosong dari API", ['company_id' => $companyId]);
             }
 
             foreach ($contents as $content) {
@@ -319,7 +319,6 @@ class CSRService
 
                                 $query->update($payload);
                                 $updated++;
-
                             } else {
 
                                 $payload['created_at'] = now();
@@ -365,7 +364,6 @@ class CSRService
 
                                 $query->update($payload);
                                 $updated++;
-
                             } else {
 
                                 $payload['created_at'] = now();
@@ -375,6 +373,44 @@ class CSRService
                             }
                         }
                     }
+                }
+
+                // =========================
+                // 🔥 SAVE SUMMARY
+                // =========================
+                $summary = $content['summary'] ?? [];
+                $pillars = collect($summary['pillarCostDetail'] ?? [])
+                    ->keyBy('pillarName');
+
+                $summaryPayload = [
+                    'job_site'                  => $jobSite,
+                    'organization'              => $organization,
+                    'location'                  => $content['siteShortName'] ?? '',
+                    'total_cost_planning'       => $summary['totalCostPlanning'] ?? 0,
+                    'total_cost_implementation' => $summary['totalCostImplementation'] ?? 0,
+                    'pillar_socio_culture'      => $pillars['Socio-Cultural & Religious']['pillarCost'] ?? 0,
+                    'pillar_infra_env'          => $pillars['Infrastucture & Environmental Development']['pillarCost'] ?? 0,
+                    'pillar_education_health'   => $pillars['Education & Health']['pillarCost'] ?? 0,
+                    'pillar_economic_dev'       => $pillars['Economic Development']['pillarCost'] ?? 0,
+                    'total_planning'            => (int) ($summary['totalPlanning'] ?? 0),
+                    'total_impacted_plan'       => (int) ($summary['totalImpactedPlan'] ?? 0),
+                    'total_impacted_real'       => (int) ($summary['totalImpactedReal'] ?? 0),
+                    'total_implementation'      => (int) ($summary['totalImplementation'] ?? 0),
+                    'total_observation'         => (int) ($summary['totalObservation'] ?? 0),
+                    'updated_at'                => now(),
+                ];
+
+                $exists = $db->table('data_toc_summary')
+                    ->where('job_site', $jobSite)
+                    ->exists();
+
+                if ($exists) {
+                    $db->table('data_toc_summary')
+                        ->where('job_site', $jobSite)
+                        ->update($summaryPayload);
+                } else {
+                    $summaryPayload['created_at'] = now();
+                    $db->table('data_toc_summary')->insert($summaryPayload);
                 }
             }
 
@@ -386,7 +422,6 @@ class CSRService
             ]);
 
             return compact('inserted', 'updated', 'skipped');
-
         } catch (\Throwable $e) {
 
             Log::error("❌ TOC Sync FAILED", [
@@ -395,6 +430,83 @@ class CSRService
                 'line'       => $e->getLine(),
             ]);
 
+            throw $e;
+        }
+    }
+
+    public function syncSHE(array $data, int $companyId): array
+    {
+        $this->connector->setDynamicConnection($companyId);
+        $db = DB::connection('dynamic');
+
+        $inserted = 0;
+        $updated  = 0;
+        $skipped  = 0;
+
+        try {
+            if (empty($data)) {
+                Log::warning("Data SHE kosong dari API", ['company_id' => $companyId]);
+                return compact('inserted', 'updated', 'skipped');
+            }
+
+            foreach ($data as $row) {
+                $remoteId = $row['id'] ?? null;
+                if (!$remoteId) {
+                    $skipped++;
+                    continue;
+                }
+
+                $payload = [
+                    'remote_id'             => $remoteId,
+                    'organization'          => $row['organization'] ?? null,
+                    'location'              => $row['location'] ?? null,
+                    'account_style_caption' => $row['accountStyleCaption'] ?? null,
+                    'account_number'        => $row['accountNumber'] ?? null,
+                    'site_id'               => $row['siteId'] ?? null,
+                    'month'                 => $row['month'] ?? null,
+                    'year'                  => $row['year'] ?? null,
+                    'trir'                  => $row['trir'] ?? null,
+                    'ltifr'                 => $row['ltifr'] ?? null,
+                    'count_incident'        => $row['countIncident'] ?? null,
+                    'count_accident'        => $row['countAccident'] ?? null,
+                    'ceiling_trir'          => $row['ceilingTrir'] ?? null,
+                    'ceiling_ltifr'         => $row['ceilingLtifr'] ?? null,
+                    'last_load_utc_date'    => isset($row['lastLoadUtcDate'])
+                        ? \Carbon\Carbon::parse($row['lastLoadUtcDate'])->format('Y-m-d H:i:s')
+                        : null,
+                    'updated_at'            => now(),
+                ];
+
+                $exists = $db->table('data_she')
+                    ->where('remote_id', $remoteId)
+                    ->exists();
+
+                if ($exists) {
+                    $db->table('data_she')
+                        ->where('remote_id', $remoteId)
+                        ->update($payload);
+                    $updated++;
+                } else {
+                    $payload['created_at'] = now();
+                    $db->table('data_she')->insert($payload);
+                    $inserted++;
+                }
+            }
+
+            Log::info("✅ SHE Sync Completed", [
+                'company_id' => $companyId,
+                'inserted'   => $inserted,
+                'updated'    => $updated,
+                'skipped'    => $skipped,
+            ]);
+
+            return compact('inserted', 'updated', 'skipped');
+        } catch (\Throwable $e) {
+            Log::error("❌ SHE Sync FAILED", [
+                'company_id' => $companyId,
+                'message'    => $e->getMessage(),
+                'line'       => $e->getLine(),
+            ]);
             throw $e;
         }
     }
@@ -418,7 +530,6 @@ class CSRService
             return $date
                 ->setTimezone('Asia/Jakarta')
                 ->format('Y-m-d H:i:s');
-
         } catch (\Exception $e) {
             return null;
         }

@@ -13,10 +13,16 @@ class BumaScopeService
     private function endpointByScope(int $scope): string
     {
         return match ($scope) {
-            1 => '/api/esg/master/account-styles-scope-1',
-            2 => '/api/esg/master/account-styles-scope-2',
-            3 => '/api/esg/master/account-styles-scope-3',
-            default => throw new InvalidArgumentException('Scope must be 1, 2, or 3'),
+            // 1 => '/api/esg/master/account-styles-scope-1',
+            // 2 => '/api/esg/master/account-styles-scope-2',
+            // 3 => '/api/esg/master/account-styles-scope-3',
+            // 4 => '/api/esg/master/account-styles-non-scope', // 4 for non-scope
+            
+            1 => '/master/account-styles-scope-1',
+            2 => '/master/account-styles-scope-2',
+            3 => '/master/account-styles-scope-3',
+            4 => '/master/account-styles-non-scope', // 4 for non-scope
+            default => throw new InvalidArgumentException('Scope must be 1, 2, 3, or 4'),
         };
     }
 
@@ -153,7 +159,7 @@ class BumaScopeService
             foreach (array_chunk($toUpsert, 1000) as $chunk) {
                 DataEnv::upsert(
                     $chunk,
-                    ['scope', 'remote_id'],
+                    ['scope', 'remote_id', 'account_style_caption'],
                     [
                         'sync_status','last_synced_at',
                         'organization','location','account_style_caption','account_number',

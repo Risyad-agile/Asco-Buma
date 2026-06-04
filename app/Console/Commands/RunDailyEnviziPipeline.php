@@ -18,9 +18,11 @@ class RunDailyEnviziPipeline extends Command
             'sync:buma-scope 1 --org=BIG --pageSize=100',
             'sync:buma-scope 2 --org=BIG --pageSize=100',
             'sync:buma-scope 3 --org=BIG --pageSize=100',
+            'sync:buma-scope 4 --org=BIG --pageSize=100',
             'export:data-env --scope=1 --limit=1000',
             'export:data-env --scope=2 --limit=1000',
             'export:data-env --scope=3 --limit=1000',
+            'export:data-env --scope=4 --limit=1000',
             'exports:cleanup',
         ];
 

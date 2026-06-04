@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
+class BaseCSRExportTurnOverFormat implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected string $accountStyle;
@@ -34,10 +34,10 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->db->table('data_trn as trn')
-            ->leftJoin('account_styles as acc', 'trn.account_style', '=', 'acc.acc_style_caption') 
-            ->where('trn.account_style', $this->accountStyle) 
-            ->select('trn.*', 'acc.acc_style_link')
+        return $this->db->table('data_csr as csr')
+            ->leftJoin('account_styles as acc', 'csr.account_style', '=', 'acc.acc_style_caption') 
+            ->where('csr.account_style', $this->accountStyle) 
+            ->select('csr.*', 'acc.acc_style_link')
             ->get()
             ->map(function ($row) {
                 return [
@@ -46,21 +46,21 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
                     $row->location ?? '',
                     '',                  // Location Ref
                     $row->acc_style_link ?? '', // Account Style Link
-                    'CSR Training BUMA', // Account Style Caption hardcoded
+                    $row->account_style ?? '',
                     'Default',           // Account Subtype
                     $row->account_number ?? '',
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    // $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
-                    // $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
-                    $row->start_date ?? '',
-                    $row->end_date ?? '',
-                    'Actual', 'Standard', 'Default', 'Overwrite', '', '', 
-                    $row->total_hours, // Total Hours 
-                    $row->gender, // Gender
-                    $row->age_category, // Age Category
-                    $row->level // Level
+                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
+                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    'Actual', 'Standard', 'Default', 'Overwrite', '', '',
+                    $row->employee_total ?? 0,
+                    $row->male ?? 0,
+                    $row->female ?? 0,
+                    $row->k30_th ?? 0,
+                    $row->thirty_to_50_th ?? 0,
+                    $row->more_than_50_th ?? 0
                 ];
             });
     }
@@ -86,11 +86,13 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
             'Record Subtype',
             'Record Entry Method',
             'Record Reference',
-            'Record Invoice Number', 
-            'Total Hours',
-            'Gender',
-            'Age Category',
-            'Level'
+            'Record Invoice Number',
+            'Employees (Number)',
+            'Male',
+            'Female',
+            'Under30yr',
+            '30to50yr',
+            'Above50yr'
         ];
     }
 }

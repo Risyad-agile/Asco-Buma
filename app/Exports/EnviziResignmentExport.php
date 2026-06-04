@@ -3,7 +3,7 @@
 namespace App\Exports;
  
 
-class EnviziResignmentExport extends BaseCSRExportFormat1
+class EnviziResignmentExport extends BaseCSRExportTurnOverFormat
 {
     private const STYLE = 'CSR Employee - Turnover - Resignation';
 

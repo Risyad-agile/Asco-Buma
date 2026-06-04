@@ -16,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Illuminate\Support\Collection;
 
 
-class SpecialDataEnvScopeExport implements
+class BiodieselDataEnvScopeExport implements
     FromQuery,
     WithHeadings,
     WithTitle,
@@ -31,7 +31,7 @@ class SpecialDataEnvScopeExport implements
     /** @var array<string,AccountStyles> caption => AccountStyles */
     protected $stylesByCaption;
 
-    protected string $qtyHeader = 'Quantity';
+    protected string $qtyHeader = 'Biodiesel B35 (L)';
 
     public function __construct(array $ids)
     {
@@ -118,37 +118,33 @@ class SpecialDataEnvScopeExport implements
         $orgName = (string) ($row->organization ?? '');
         $orgLink = $this->orgLinks[$orgName] ?? null;
 
-        $start = $row->record_start
-            ? ExcelDate::dateTimeToExcel($row->record_start->copy()->startOfDay())
-            : null;
+        $start = $row->record_start ? substr($row->record_start, 0, 10) : '';
 
-        $end = $row->record_end
-            ? ExcelDate::dateTimeToExcel($row->record_end->copy()->startOfDay())
-            : null;
+        $end = $row->record_end ? substr($row->record_end, 0, 10) : '';
 
         return [
             $orgLink,                        // 1 ✅ organization link
             // $row->organization,              // 2
             'PT. Buma International Group Tbk.',  //development/testing fixed value for Organization
-            $row->location,                  // 3
+            $row->location ?? '',                  // 3
             null,                            // 4 location ref (not available)
-            $style?->acc_style_link,         // 5 ✅ account style link
-            $row->account_style_caption,     // 6
+            $style?->acc_style_link ?? '',         // 5 ✅ account style link
+            $row->account_style_caption ?? '',     // 6
             'Default',                       // 7 ✅ fixed
-            $row->account_number,            // 8
-            $row->account_reference,         // 9
-            $row->account_supplier,          // 10
-            $style?->acc_style_reader,       // 11 (optional; from account styles if you want)
+            $row->account_number ?? 0,            // 8
+            $row->account_reference ?? '',         // 9
+            $row->account_supplier ?? '',          // 10
+            $style?->acc_style_reader ?? '',       // 11 (optional; from account styles if you want)
             $start,                          // 12
             $end,                            // 13
             'Actual',                        // 14 ✅ fixed
             'Standard',                      // 15 ✅ fixed
             'Default',                       // 16 ✅ fixed
             'Overwrite',                     // 17 ✅ fixed
-            $row->record_reference,          // 18
-            $row->record_invoice_number,     // 19
-            $row->quantity,                  // 20
-            $row->total_cost_incl_tax_local_currency, // 21
+            $row->record_reference ?? '',          // 18
+            $row->record_invoice_number ?? 0,     // 19
+            $row->quantity ?? 0,                  // 20
+            $row->total_cost_incl_tax_local_currency ?? 0, // 21
         ];
     }
 
@@ -157,8 +153,8 @@ class SpecialDataEnvScopeExport implements
         return [
             'L' => NumberFormat::FORMAT_DATE_YYYYMMDD2, // 12 Record Start
             'M' => NumberFormat::FORMAT_DATE_YYYYMMDD2, // 13 Record End
-            'T' => '#,##0.0000',                        // 20 Quantity
-            'U' => '#,##0.00',                          // 21 Total Cost
+            // 'T' => '#,##0.0000',                        // 20 Quantity
+            // 'U' => '#,##0.00',                          // 21 Total Cost
         ];
     }
 

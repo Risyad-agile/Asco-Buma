@@ -2,12 +2,11 @@
 
 namespace App\Exports;
 
-use App\Models\DataCsr;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class BaseCSRExportFormat3 implements FromCollection, WithHeadings
+class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadings
 {
     protected int $companyId;
     protected $db;
@@ -30,60 +29,49 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->db->table('data_she as s')
-            ->leftJoin('locations as loc', 'loc.location_name', '=', 's.location')
+        return $this->db->table('data_toc_summary as s')
+            ->leftJoin('locations as loc', 'loc.location_name', '=', DB::raw("CONCAT(s.location, '_OFFICE')"))
             ->whereNotNull('loc.location_name')
+            ->where('s.organization', '!=', '')
             ->select(
-                's.organization',
                 's.location',
-                's.account_number',
-                's.month',
-                's.year',
-                's.trir',
-                's.ltifr',
-                's.count_incident',
-                's.count_accident',
-                's.ceiling_trir',
-                's.ceiling_ltifr',
+                's.total_cost_planning',
+                's.total_cost_implementation',
+                's.pillar_education_health',
+                's.pillar_economic_dev',
+                's.pillar_infra_env',
+                's.pillar_socio_culture',
                 's.created_at',
                 's.updated_at'
             )
             ->get()
             ->map(function ($row) {
-                $recordStart = $row->year && $row->month
-                    ? sprintf('%04d-%02d-01', $row->year, $row->month)
-                    : '';
-                $recordEnd = $row->year && $row->month
-                    ? date('Y-m-t', mktime(0, 0, 0, $row->month, 1, $row->year))
-                    : '';
-
                 return [
                     $this->orgLink,
                     $this->compName,
-                    $row->location ?? '',
+                    $row->location ? $row->location . '_OFFICE' : '',   // Location
                     '',
-                    '8004322',                    // Account Style Link
-                    'Safety Health Environment',  // Account Style Caption
+                    '8004319',                                          // Account Style Link
+                    'Implementation Cost',                              // Account Style Caption
                     'Default',
-                    $row->account_number ?? '',
+                    'Implementation_Cost_' . ($row->location ?? ''),   // Account Number
                     '',
                     '',
                     '',
-                    $recordStart,
-                    $recordEnd,
+                    '2025-12-31',                    // Record Start YYYY-MM-DD
+                    '2025-12-31',                    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',
                     'Overwrite',
                     '',
                     '',
-                    $row->count_incident ?? 0,
-                    $row->count_accident ?? 0,
-                    $row->ltifr ?? 0,
-                    $row->ceiling_ltifr ?? 0,
-                    $row->trir ?? 0,
-                    $row->ceiling_trir ?? 0,
-                    
+                    $row->total_cost_implementation ?? 0,
+                    $row->total_cost_planning ?? 0,
+                    $row->pillar_education_health ?? 0,
+                    $row->pillar_economic_dev ?? 0,
+                    $row->pillar_infra_env ?? 0,
+                    $row->pillar_socio_culture ?? 0,
                 ];
             });
     }
@@ -110,12 +98,12 @@ class BaseCSRExportFormat3 implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number',
-            'Incident',
-            'Accident',
-            'LTIFR',
-            'Ceiling LTIFR',
-            'TRIR',
-            'Ceiling TRIR'
+            'Total Cost',
+            'Plan',
+            'Education & Health',
+            'Economic Dev',
+            'Infrastructure & Envi Dev',
+            'Socio Culture & Rel',
         ];
     }
 }

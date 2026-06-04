@@ -24,7 +24,7 @@ class ConnectorService
             "username" => $company->db_user,
             "password" => $company->db_pass,
             "charset"  => "utf8mb4",
-            "collation"=> "utf8mb4_general_ci",
+            "collation" => "utf8mb4_general_ci",
         ]);
 
         DB::purge('dynamic');
@@ -33,175 +33,64 @@ class ConnectorService
 
     public function fetchCSRFromSource($companyId): array
     {
-        // 1️⃣ ambil config dari DB
-        $source = ConnectorSource::where('comp_id', $companyId)
-                    ->where('local_table', 'DATA_CSR')
-                    ->where('is_active', true)
-                    ->firstOrFail();
-
-        $config = $source->config_json; // sudah otomatis array
-
-        // handle double encoded JSON
-        if (is_string($config)) {
-
-            // first decode
-            $decoded = json_decode($config, true);
-
-            // kalau hasilnya masih string, decode lagi
-            if (is_string($decoded)) {
-                $decoded = json_decode($decoded, true);
-            }
-
-            $config = $decoded;
-        }
-
-        if (!$config) {
-            throw new \Exception("Config JSON kosong untuk DATA_CSR");
-        }
-
+        $config = $this->getConfig($companyId, 'data_csr');
         Log::info("🚀 Fetch CSR - Company {$companyId}");
-
-        // 2️⃣ panggil API
-        $response = $this->fetchFromClient($config);
-
-        if (($response['status'] ?? '') !== 'success') {
-            throw new \Exception("Fetch CSR gagal dari client");
-        }
-
-        $data = $response['data'] ?? [];
-
-        // 3️⃣ normalisasi struktur response
-        if (isset($data['result']['content']['data'])) {
-            $data = $data['result']['content']['data'];
-        } elseif (isset($data['data'])) {
-            $data = $data['data'];
-        }
-
-        if (!is_array($data)) {
-            throw new \Exception("Response CSR bukan array valid");
-        }
-
-        Log::info("✅ CSR fetched successfully", [
-            'company_id' => $companyId,
-            'total_rows' => count($data)
-        ]);
-
+        $data = $this->fetchAllPages($config);
+        Log::info("✅ CSR fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
         return $data;
-    }    
-
+    }
 
     public function fetchTRNFromSource($companyId): array
     {
-        // 1️⃣ ambil config dari DB
-        $source = ConnectorSource::where('comp_id', $companyId)
-                    ->where('local_table', 'DATA_TRN')
-                    ->where('is_active', true)
-                    ->firstOrFail();
-
-        $config = $source->config_json;
-
-        // handle double encoded JSON
-        if (is_string($config)) {
-
-            $decoded = json_decode($config, true);
-
-            if (is_string($decoded)) {
-                $decoded = json_decode($decoded, true);
-            }
-
-            $config = $decoded;
-        }
-
-        if (!$config) {
-            throw new \Exception("Config JSON kosong untuk DATA_TRN");
-        }
-
+        $config = $this->getConfig($companyId, 'data_trn');
         Log::info("🚀 Fetch TRN - Company {$companyId}");
-
-        // 2️⃣ panggil API
-        $response = $this->fetchFromClient($config);
-
-        if (($response['status'] ?? '') !== 'success') {
-            throw new \Exception("Fetch TRN gagal dari client");
-        }
-
-        $data = $response['data'] ?? [];
-
-        // 3️⃣ normalisasi struktur response
-        if (isset($data['result']['content']['data'])) {
-            $data = $data['result']['content']['data'];
-        } elseif (isset($data['data'])) {
-            $data = $data['data'];
-        }
-
-        if (!is_array($data)) {
-            throw new \Exception("Response TRN bukan array valid");
-        }
-
-        Log::info("✅ TRN fetched successfully", [
-            'company_id' => $companyId,
-            'total_rows' => count($data)
-        ]);
-
+        $data = $this->fetchAllPages($config);
+        Log::info("✅ TRN fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
         return $data;
     }
-
 
     public function fetchTOCFromSource($companyId): array
     {
-        // 1️⃣ ambil config dari DB
+        $config = $this->getConfig($companyId, 'data_toc');
+        Log::info("🚀 Fetch TOC - Company {$companyId}");
+        $data = $this->fetchAllPages($config);
+        Log::info("✅ TOC fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
+        return $data;
+    }
+
+    public function fetchSHEFromSource($companyId): array
+    {
+        $config = $this->getConfig($companyId, 'data_she');
+        Log::info("🚀 Fetch SHE - Company {$companyId}");
+        $data = $this->fetchAllPages($config);
+        Log::info("✅ SHE fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
+        return $data;
+    }
+
+    private function getConfig($companyId, string $localTable): array
+    {
         $source = ConnectorSource::where('comp_id', $companyId)
-                    ->where('local_table', 'DATA_TOC')
-                    ->where('is_active', true)
-                    ->firstOrFail();
+            ->where('local_table', $localTable)
+            ->where('is_active', true)
+            ->firstOrFail();
 
         $config = $source->config_json;
 
-        // handle double encoded JSON
         if (is_string($config)) {
-
             $decoded = json_decode($config, true);
-
             if (is_string($decoded)) {
                 $decoded = json_decode($decoded, true);
             }
-
             $config = $decoded;
         }
 
         if (!$config) {
-            throw new \Exception("Config JSON kosong untuk DATA_TOC");
+            throw new \Exception("Config JSON kosong untuk {$localTable}");
         }
 
-        Log::info("🚀 Fetch TOC - Company {$companyId}");
-
-        // 2️⃣ panggil API
-        $response = $this->fetchFromClient($config);
-
-        if (($response['status'] ?? '') !== 'success') {
-            throw new \Exception("Fetch TOC gagal dari client");
-        }
-
-        $data = $response['data'] ?? [];
-
-        // 3️⃣ normalisasi struktur response (penting karena beda-beda API)
-        if (isset($data['result']['content']['data'])) {
-            $data = $data['result']['content']['data'];
-        } elseif (isset($data['data'])) {
-            $data = $data['data'];
-        }
-
-        if (!is_array($data)) {
-            throw new \Exception("Response TOC bukan array valid");
-        }
-
-        Log::info("✅ TOC fetched successfully", [
-            'company_id' => $companyId,
-            'total_rows' => count($data)
-        ]);
-
-        return $data;
+        return $config;
     }
+
     /**
      * Call external API client
      */
@@ -247,5 +136,54 @@ class ConnectorService
             'code'   => $response->getStatusCode(),
             'data'   => json_decode($response->getBody(), true)
         ];
+    }
+
+    /**
+     * Helper to fetch all pages API      
+     * */
+    private function fetchAllPages(array $config): array
+    {
+        $allData = [];
+        $pageNumber = 1;
+
+        do {
+            // override pageNumber in body
+            $body = json_decode($config['api_body'] ?? '{}', true) ?: [];
+            $body['pagingParameter']['pageNumber'] = $pageNumber;
+            $config['api_body'] = json_encode($body);
+
+            $response = $this->fetchFromClient($config);
+
+            if (($response['status'] ?? '') !== 'success') {
+                throw new \Exception("API fetch failed on page {$pageNumber}");
+            }
+
+            $data = $response['data'] ?? [];
+
+            // normalize
+            if (isset($data['result']['content']['data'])) {
+                $rows = $data['result']['content']['data'];
+                $totalPages = (int) ($data['result']['content']['totalPages'] ?? 1);
+            } elseif (isset($data['data'])) {
+                $rows = $data['data'];
+                $totalPages = 1;
+            } else {
+                $rows = [];
+                $totalPages = 1;
+            }
+
+            if (!is_array($rows)) break;
+
+            $allData = array_merge($allData, $rows);
+
+            Log::info("📄 Fetched page {$pageNumber}/{$totalPages}", [
+                'rows' => count($rows),
+                'total_so_far' => count($allData),
+            ]);
+
+            $pageNumber++;
+        } while ($pageNumber <= $totalPages);
+
+        return $allData;
     }
 }
