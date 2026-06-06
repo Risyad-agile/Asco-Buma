@@ -50,9 +50,8 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                 ])
         ->select([
             'csr.location',
-            DB::raw("'' as location_ref"),
-            DB::raw("DATE(csr.created_utc_date) as created_utc_date"),
-            DB::raw("DATE(csr.modified_utc_date) as modified_utc_date"),
+            'csr.year',
+            'csr.month',
             DB::raw("'CSR Employee - Employee Total' as account_style"),
         ])  
         ->selectRaw('sum(csr.employee_total) as employee_total')
@@ -77,8 +76,8 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
         ->selectRaw('SUM(csr.konghucu) as konghucu')
         ->groupBy(
                     'csr.location',
-                    DB::raw('DATE(csr.created_utc_date)'),
-                    DB::raw('DATE(csr.modified_utc_date)')
+                    'csr.year',
+                    'csr.month'
                 );
 
         return $this->db->query()
@@ -101,8 +100,8 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
-                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record Start (1st of month)
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record End (1st of month) 
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
                     $row->employee_total ?? 0,
                     $row->male ?? 0,

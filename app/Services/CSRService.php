@@ -52,6 +52,7 @@ class CSRService
                     'organization'          => trim($row['organization']),
                     'account_number'        => trim($row['accountNumber']),
                     'year'                  => $row['year'] ?? null,
+                    'month'                 => $row['month'] ?? null,
 
                     'male'                  => (int) ($row['male'] ?? 0),
                     'female'                => (int) ($row['female'] ?? 0),
