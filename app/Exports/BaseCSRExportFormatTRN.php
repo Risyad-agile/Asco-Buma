@@ -54,7 +54,7 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
                     '',                  // Account Reader
                     // $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
                     // $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
-                    $row->start_date ?? '',
+                    $row->end_date ?? '',
                     $row->end_date ?? '',
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '', 
                     $row->total_hours, // Total Hours 

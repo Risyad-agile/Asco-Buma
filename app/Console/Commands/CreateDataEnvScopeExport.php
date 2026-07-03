@@ -160,20 +160,20 @@ class CreateDataEnvScopeExport extends Command
 
                         $s3Key = $prefix . $filename;
 
-                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+                        // Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        // $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
-                        $this->info("☁ Uploaded SPECIAL to Envizi S3: {$s3Key}");
+                        // $this->info("☁ Uploaded SPECIAL to Envizi S3: {$s3Key}");
 
-                        $logger->log($run, 's3_uploaded', 'SPECIAL uploaded to Envizi S3', [
-                            'scope' => $scope,
-                            'batch' => $batch,
-                            'type'  => 'SPECIAL',
-                            'filename' => $filename,
-                            's3_key' => $s3Key,
-                            'count' => count($specialIds),
-                            'verified' => $exists,
-                        ], $exists ? 'info' : 'warning');
+                        // $logger->log($run, 's3_uploaded', 'SPECIAL uploaded to Envizi S3', [
+                        //     'scope' => $scope,
+                        //     'batch' => $batch,
+                        //     'type'  => 'SPECIAL',
+                        //     'filename' => $filename,
+                        //     's3_key' => $s3Key,
+                        //     'count' => count($specialIds),
+                        //     'verified' => $exists,
+                        // ], $exists ? 'info' : 'warning');
 
                         $totalFiles++;
                         $totalRows += count($specialIds);
@@ -208,20 +208,20 @@ class CreateDataEnvScopeExport extends Command
 
                         $s3Key = $prefix . $filename;
 
-                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+                        // Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        // $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
-                        $this->info("☁ Uploaded NORMAL to Envizi S3: {$s3Key}");
+                        // $this->info("☁ Uploaded NORMAL to Envizi S3: {$s3Key}");
 
-                        $logger->log($run, 's3_uploaded', 'NORMAL uploaded to Envizi S3', [
-                            'scope' => $scope,
-                            'batch' => $batch,
-                            'type'  => 'NORMAL',
-                            'filename' => $filename,
-                            's3_key' => $s3Key,
-                            'count' => count($normalIds),
-                            'verified' => $exists,
-                        ], $exists ? 'info' : 'warning');
+                        // $logger->log($run, 's3_uploaded', 'NORMAL uploaded to Envizi S3', [
+                        //     'scope' => $scope,
+                        //     'batch' => $batch,
+                        //     'type'  => 'NORMAL',
+                        //     'filename' => $filename,
+                        //     's3_key' => $s3Key,
+                        //     'count' => count($normalIds),
+                        //     'verified' => $exists,
+                        // ], $exists ? 'info' : 'warning');
 
                         $totalFiles++;
                         $totalRows += count($normalIds);
@@ -256,20 +256,20 @@ class CreateDataEnvScopeExport extends Command
 
                         $s3Key = $prefix . $filename;
 
-                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+                        // Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        // $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
-                        $this->info("☁ Uploaded BIODIESEL to Envizi S3: {$s3Key}");
+                        // $this->info("☁ Uploaded BIODIESEL to Envizi S3: {$s3Key}");
 
-                        $logger->log($run, 's3_uploaded', 'BIODIESEL uploaded to Envizi S3', [
-                            'scope' => $scope,
-                            'batch' => $batch,
-                            'type'  => 'BIODIESEL',
-                            'filename' => $filename,
-                            's3_key' => $s3Key,
-                            'count' => count($biodieselIds),
-                            'verified' => $exists,
-                        ], $exists ? 'info' : 'warning');
+                        // $logger->log($run, 's3_uploaded', 'BIODIESEL uploaded to Envizi S3', [
+                        //     'scope' => $scope,
+                        //     'batch' => $batch,
+                        //     'type'  => 'BIODIESEL',
+                        //     'filename' => $filename,
+                        //     's3_key' => $s3Key,
+                        //     'count' => count($biodieselIds),
+                        //     'verified' => $exists,
+                        // ], $exists ? 'info' : 'warning');
 
                         $totalFiles++;
                         $totalRows += count($biodieselIds);
@@ -304,20 +304,20 @@ class CreateDataEnvScopeExport extends Command
 
                         $s3Key = $prefix . $filename;
 
-                        Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
-                        $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
+                        // Storage::disk('s3_agile_poc')->put($s3Key, Storage::disk('local')->get($localPath));
+                        // $exists = Storage::disk('s3_agile_poc')->exists($s3Key);
 
-                        $this->info("☁ Uploaded TOTAL OB & COAL to Envizi S3: {$s3Key}");
+                        // $this->info("☁ Uploaded TOTAL OB & COAL to Envizi S3: {$s3Key}");
 
-                        $logger->log($run, 's3_uploaded', 'TOTAL OB & COAL uploaded to Envizi S3', [
-                            'scope' => $scope,
-                            'batch' => $batch,
-                            'type'  => 'TOTAL OB & COAL',
-                            'filename' => $filename,
-                            's3_key' => $s3Key,
-                            'count' => count($totalOBandCoalIds),
-                            'verified' => $exists,
-                        ], $exists ? 'info' : 'warning');
+                        // $logger->log($run, 's3_uploaded', 'TOTAL OB & COAL uploaded to Envizi S3', [
+                        //     'scope' => $scope,
+                        //     'batch' => $batch,
+                        //     'type'  => 'TOTAL OB & COAL',
+                        //     'filename' => $filename,
+                        //     's3_key' => $s3Key,
+                        //     'count' => count($totalOBandCoalIds),
+                        //     'verified' => $exists,
+                        // ], $exists ? 'info' : 'warning');
 
                         $totalFiles++;
                         $totalRows += count($totalOBandCoalIds);

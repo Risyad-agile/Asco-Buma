@@ -33,7 +33,13 @@ class Kernel extends ConsoleKernel
         // })->hourly();
 
         $schedule->command('pipeline:envizi-daily')
-            ->dailyAt('21:00')
+            ->dailyAt('18:00')
+            ->withoutOverlapping()
+            ->onOneServer() 
+            ->appendOutputTo(storage_path('logs/envizi_pipeline.log'));
+
+        $schedule->command('pipeline:envizi-csr-daily')
+            ->dailyAt('18:00')
             ->withoutOverlapping()
             ->onOneServer() 
             ->appendOutputTo(storage_path('logs/envizi_pipeline.log'));

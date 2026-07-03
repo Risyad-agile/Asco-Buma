@@ -54,15 +54,15 @@ class BaseCSRExportFormatSocialImpact implements FromCollection, WithHeadings
                     $this->compName,                 // Organization
                     $loc,                            // Location
                     '',                              // Location Ref
-                    $this->styleLink,                // Account Style Link
+                    '8004561',                       // Account Style Link
                     'Social Impact',                 // Account Style Caption
                     'Default',                       // Account Subtype
                     'Social Impact_' . $loc,         // Account Number
                     '',                              // Account Reference
                     '',                              // Account Supplier
                     '',                              // Account Reader
-                    '2025-12-31',                    // Record Start YYYY-MM-DD
-                    '2025-12-31',                    // Record End YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
                     'Actual',                        // Record Data Quality
                     'Standard',                      // Record Billing Type
                     'Default',                       // Record Subtype

@@ -52,8 +52,8 @@ class BaseCSRExportFormat1 implements FromCollection, WithHeadings
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
-                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record Start (1st of month)
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record End (1st of month) 
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
                     $row->employee_total ?? 0,
                     $row->male ?? 0,

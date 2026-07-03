@@ -29,6 +29,9 @@ class CSRExportService
             //BaseCSRExportFormat1 
             \App\Exports\EnviziDirectExport::class     => "Account_Setup_and_Data_Load_Direct_{$date}.xlsx",
             \App\Exports\EnviziIndirectExport::class   => "Account_Setup_and_Data_Load_Indirect_{$date}.xlsx",
+            \App\Exports\EnviziLevel1Export::class     => "Account_Setup_and_Data_Load_Level_1_{$date}.xlsx",
+            \App\Exports\EnviziLevel2Export::class     => "Account_Setup_and_Data_Load_Level_2_{$date}.xlsx",
+            \App\Exports\EnviziLevel3Export::class     => "Account_Setup_and_Data_Load_Level_3_{$date}.xlsx",
             \App\Exports\EnviziLevel4Export::class     => "Account_Setup_and_Data_Load_Level_4_{$date}.xlsx",
             \App\Exports\EnviziLevel5Export::class     => "Account_Setup_and_Data_Load_Level_5_{$date}.xlsx",
             \App\Exports\EnviziLevel6Export::class     => "Account_Setup_and_Data_Load_Level_6_{$date}.xlsx",

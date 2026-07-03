@@ -102,26 +102,26 @@ class ExportCSR extends Command
                 continue;
             }
 
-            try {
-                $prefix = rtrim(env('AWS_AGILE_POC_PREFIX', ''), '/') . '/';
-                $s3Key = $prefix . $fileName;
+            // try {
+            //     $prefix = rtrim(env('AWS_AGILE_POC_PREFIX', ''), '/') . '/';
+            //     $s3Key = $prefix . $fileName;
 
-                Storage::disk('s3_agile_poc')->put($s3Key, $content);
+            //     Storage::disk('s3_agile_poc')->put($s3Key, $content);
 
-                $logger->log($run, 's3_uploaded', 'File uploaded to S3', [
-                    'filename' => $fileName,
-                    's3_key' => $s3Key
-                ]);
+            //     $logger->log($run, 's3_uploaded', 'File uploaded to S3', [
+            //         'filename' => $fileName,
+            //         's3_key' => $s3Key
+            //     ]);
 
-                $this->info("☁ Uploaded: $fileName");
-            } catch (\Throwable $e) {
-                $logger->log($run, 's3_failed', 'Upload failed', [
-                    'filename' => $fileName,
-                    'error' => $e->getMessage(),
-                ], 'error');
+            //     $this->info("☁ Uploaded: $fileName");
+            // } catch (\Throwable $e) {
+            //     $logger->log($run, 's3_failed', 'Upload failed', [
+            //         'filename' => $fileName,
+            //         'error' => $e->getMessage(),
+            //     ], 'error');
 
-                $this->error("❌ Upload failed: $fileName → " . $e->getMessage());
-            }
+            //     $this->error("❌ Upload failed: $fileName → " . $e->getMessage());
+            // }
         }
         $logger->success($run, [
             'total_files' => count($files),

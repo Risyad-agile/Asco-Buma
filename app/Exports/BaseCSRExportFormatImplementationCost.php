@@ -38,9 +38,13 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
                 's.total_cost_planning',
                 's.total_cost_implementation',
                 's.pillar_education_health',
+                's.pillar_education_health_plan',
                 's.pillar_economic_dev',
+                's.pillar_economic_dev_plan',
                 's.pillar_infra_env',
+                's.pillar_infra_env_plan',
                 's.pillar_socio_culture',
+                's.pillar_socio_culture_plan',
                 's.created_at',
                 's.updated_at'
             )
@@ -52,14 +56,14 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
                     $row->location ? $row->location . '_OFFICE' : '',   // Location
                     '',
                     '8004319',                                          // Account Style Link
-                    'Implementation Cost',                              // Account Style Caption
+                    'CSR - Implementation Cost',                              // Account Style Caption
                     'Default',
-                    'Implementation_Cost_' . ($row->location ?? ''),   // Account Number
+                    'CSR - Implementation Cost_' . ($row->location ?? ''),   // Account Number
                     '',
                     '',
                     '',
-                    '2025-12-31',                    // Record Start YYYY-MM-DD
-                    '2025-12-31',                    // Record End YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',
@@ -68,10 +72,14 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
                     '',
                     $row->total_cost_implementation ?? 0,
                     $row->total_cost_planning ?? 0,
-                    $row->pillar_education_health ?? 0,
-                    $row->pillar_economic_dev ?? 0,
-                    $row->pillar_infra_env ?? 0,
-                    $row->pillar_socio_culture ?? 0,
+                    $row->pillar_education_health ?? 0,       // Education & Health Impl
+                    $row->pillar_education_health_plan ?? 0,  // Education & Health Plan
+                    $row->pillar_economic_dev ?? 0,           // Economic Development Impl
+                    $row->pillar_economic_dev_plan ?? 0,      // Economic Development Plan
+                    $row->pillar_infra_env ?? 0,              // Infrastucture & Env Impl
+                    $row->pillar_infra_env_plan ?? 0,         // Infrastucture & Env Plan
+                    $row->pillar_socio_culture ?? 0,          // Socio-Cultural Impl
+                    $row->pillar_socio_culture_plan ?? 0,     // Socio-Cultural Plan
                 ];
             });
     }
@@ -100,10 +108,14 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
             'Record Invoice Number',
             'Total Cost',
             'Plan',
-            'Education & Health',
-            'Economic Dev',
-            'Infrastructure & Envi Dev',
-            'Socio Culture & Rel',
+            'Education & Health Impl',
+            'Education & Health Plan',
+            'Economic Development Impl',
+            'Economic Development Plan',
+            'Infrastucture & Environmental Development Impl',
+            'Infrastucture & Environmental Development Plan',
+            'Socio-Cultural & Religious Impl',
+            'Socio-Cultural & Religious Plan',
         ];
     }
 }

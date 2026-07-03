@@ -57,14 +57,14 @@ class BaseCSRExportFormatSocialLTO implements FromCollection, WithHeadings
                     $row->location ?? '',// Location
                     '',// Location Ref
                     $row->acc_style_link,// Account Style Link
-                    $row->acc_style_caption,// Account Style Caption
+                    'CSR - Social License To Operate',// Account Style Caption
                     'Default',// Account Subtype
-                    $row->acc_style_caption . '_' . ($row->location ?? ''),// Account Number
+                    'CSR - Social License To Operate_' . ($row->location ?? ''),// Account Number
                     '',// Account Reference
                     '',// Account Supplier
                     '',// Account Reader
-                    '2025-12-31',                    // Record Start YYYY-MM-DD
-                    '2025-12-31',                    // Record End YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
                     'Actual',// Record Data Quality
                     'Standard',// Record Billing Type
                     'Default',// Record Subtype

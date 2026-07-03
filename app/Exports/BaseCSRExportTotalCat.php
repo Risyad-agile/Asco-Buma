@@ -37,8 +37,8 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
         $sub = $this->db->table('data_csr as csr')
         ->select([
             'csr.location',
-            DB::raw("DATE(csr.created_utc_date) as created_utc_date"),
-            DB::raw("DATE(csr.modified_utc_date) as modified_utc_date"),
+            'csr.year',
+            'csr.month',
             DB::raw("'CSR Employee - Total per cat' as account_style"),
         ])
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Direct', csr.employee_total,0)) as Direct")
@@ -54,7 +54,7 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 7', csr.employee_total,0)) as Level7")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Level 8', csr.employee_total,0)) as Level8")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Middle Management', csr.employee_total,0)) as MidManage")
-        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Permanent', csr.employee_total,0)) as Permanent")
+        ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee – Outsource', csr.employee_total,0)) as Outsource")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Senior Management', csr.employee_total,0)) as SnrManage")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Staff', csr.employee_total,0)) as Staff")
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Death', csr.employee_total,0)) as TODeath")
@@ -63,8 +63,8 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
         ->selectRaw("SUM(IF(csr.account_style = 'CSR Employee - Turnover - Retirement', csr.employee_total,0)) as TORetire")
         ->groupBy(
                     'csr.location',
-                    DB::raw('DATE(csr.created_utc_date)'),
-                    DB::raw('DATE(csr.modified_utc_date)')
+                    'csr.year',
+                    'csr.month'
                 );
         return $this->db->query()
             ->fromSub($sub, 'csr')
@@ -86,8 +86,8 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    $row->created_utc_date ? substr($row->created_utc_date, 0, 10) : '',
-                    $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record Start (1st of month)
+                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record End (1st of month) 
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
                     $row->TotalEmployee, // Total Employee
                     $row->Direct,
@@ -98,7 +98,7 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
                     $row->Level7,
                     $row->Level8,
                     $row->MidManage,
-                    $row->Permanent,
+                    $row->Outsource,
                     $row->SnrManage,
                     $row->Staff,
                     $row->TODeath,
@@ -140,7 +140,7 @@ class BaseCSRExportTotalCat implements FromCollection, WithHeadings
             'Level 7',
             'Level 8',
             'Middle Management',
-            'Permanent',
+            'Outsource',
             'Senior Management',
             'Staff',
             'Turnover Death',

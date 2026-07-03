@@ -81,8 +81,8 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    '2025-12-31',                    // Record Start YYYY-MM-DD
-                    '2025-12-31',                    // Record End YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
+                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',

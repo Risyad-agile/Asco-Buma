@@ -52,7 +52,18 @@ class ConnectorService
     public function fetchTOCFromSource($companyId): array
     {
         $config = $this->getConfig($companyId, 'data_toc');
-        Log::info("🚀 Fetch TOC - Company {$companyId}");
+
+        // Inject current year as periode (e.g. ?ver=v1&periode=2026)
+        $year = now('Asia/Jakarta')->year;
+        $endpoint = $config['api_endpoint'] ?? '';
+        // strip any existing period= or periode= to avoid duplicates/wrong param
+        $endpoint = preg_replace('/([?&])periode?=\d+/', '', $endpoint);
+        // clean a dangling ? or & if it got left at the end
+        $endpoint = rtrim($endpoint, '?&');
+        $separator = str_contains($endpoint, '?') ? '&' : '?';
+        $config['api_endpoint'] = $endpoint . $separator . 'periode=' . $year;
+
+        Log::info("🚀 Fetch TOC - Company {$companyId}", ['endpoint' => $config['api_endpoint']]);
         $data = $this->fetchAllPages($config);
         Log::info("✅ TOC fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
         return $data;

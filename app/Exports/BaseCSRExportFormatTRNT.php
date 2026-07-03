@@ -48,6 +48,11 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
             ->selectRaw("SUM(IF(age_category = '> 50 years old', 1, 0)) as total_above50th")
             ->selectRaw("SUM(IF(age_category = '30 - 50 years old', 1, 0)) as total_30_50th")
             ->selectRaw("SUM(IF(age_category = '< 30 years old', 1, 0)) as total_under30")
+            ->selectRaw("SUM(IF(gender = 'Pria', total_hours, 0)) as total_hours_pria")
+            ->selectRaw("SUM(IF(gender = 'Wanita', total_hours, 0)) as total_hours_wanita")
+            ->selectRaw("SUM(IF(age_category = '< 30 years old', total_hours, 0)) as total_hours_under30")
+            ->selectRaw("SUM(IF(age_category = '30 - 50 years old', total_hours, 0)) as total_hours_30_50th")
+            ->selectRaw("SUM(IF(age_category = '> 50 years old', total_hours, 0)) as total_hours_above50th")
             ->groupBy('location');
 
         return $this->db->query()
@@ -70,7 +75,7 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
                     '',
                     '',
                     '',
-                    $row->start_date ?? '',
+                    $row->end_date ?? '',
                     $row->end_date ?? '',
                     'Actual',
                     'Standard',
@@ -85,6 +90,11 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
                     $row->total_above50th ?? 0,
                     $row->total_30_50th ?? 0,
                     $row->total_under30 ?? 0,
+                    $row->total_hours_pria ?? 0,
+                    $row->total_hours_wanita ?? 0,
+                    $row->total_hours_under30 ?? 0,
+                    $row->total_hours_30_50th ?? 0,
+                    $row->total_hours_above50th ?? 0
                 ];
             });
     }
@@ -117,7 +127,12 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
             'Total Hours',
             'Total per >50th',
             'Total per 30 - 50 th',
-            'Total per <30'
+            'Total per <30',
+            'Total Hours Pria',
+            'Total Hours Wanita',
+            'Total Hours per <30',
+            'Total Hours per 30 - 50 th',
+            'Total Hours per >50th'
         ];
     }
 }

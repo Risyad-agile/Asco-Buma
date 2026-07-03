@@ -2,9 +2,9 @@
 
 namespace App\Exports;
 
-class EnviziPermanentExport extends BaseCSRExportFormat1
+class EnviziLevel1Export extends BaseCSRExportFormat1
 {
-    private const STYLE = 'CSR Employee - Outsource';
+    private const STYLE = 'CSR Employee - Level 1';
 
     public function __construct($companyId)
     {

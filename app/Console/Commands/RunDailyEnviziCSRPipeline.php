@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class RunDailyEnviziCSRPipeline extends Command
 {
-    protected $signature = 'pipeline:envizi-csr-daily {companyId}';
+    protected $signature = 'pipeline:envizi-csr-daily';
     protected $description = 'Run full CSR → Export Direct pipeline';
 
     public function handle()
