@@ -15,6 +15,13 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
     protected string $orgLink;
     protected string $compName;
 
+    private const POSITION_CASE = "CASE 
+        WHEN trn.level IN (1,2) THEN 'Blue Collar'
+        WHEN trn.level IN (3,4) THEN 'Staff'
+        WHEN trn.level IN (5,6) THEN 'Middle Management'
+        WHEN trn.level IN (7,8) THEN 'Senior Management'
+    END";
+
     public function __construct(int $companyId, string $accountStyle)
     {
         $this->companyId = $companyId;
@@ -37,23 +44,26 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
         $sub = $this->db->table('data_trn as trn')
             ->select([
                 'location',
+                DB::raw(self::POSITION_CASE . " as job_category"),
                 DB::raw("MIN(start_date) as start_date"),
                 DB::raw("MAX(end_date) as end_date"),
                 DB::raw("'CSR Training Total' as account_style"),
             ])
-            ->selectRaw("SUM(IF(gender = 'Pria', 1, 0)) as total_pria")
-            ->selectRaw("SUM(IF(gender = 'Wanita', 1, 0)) as total_wanita")
-            ->selectRaw("SUM(CASE WHEN gender IN ('Pria','Wanita') THEN 1 ELSE 0 END) as total_peserta")
+            ->selectRaw("COUNT(DISTINCT IF(gender = 'Pria', personnel_number, NULL)) as total_pria")
+            ->selectRaw("COUNT(DISTINCT IF(gender = 'Wanita', personnel_number, NULL)) as total_wanita")
+            ->selectRaw("COUNT(DISTINCT personnel_number) as total_peserta")
             ->selectRaw("SUM(total_hours) as total_hours")
-            ->selectRaw("SUM(IF(age_category = '> 50 years old', 1, 0)) as total_above50th")
-            ->selectRaw("SUM(IF(age_category = '30 - 50 years old', 1, 0)) as total_30_50th")
-            ->selectRaw("SUM(IF(age_category = '< 30 years old', 1, 0)) as total_under30")
+            ->selectRaw("COUNT(DISTINCT IF(age_category = '> 50 years old', personnel_number, NULL)) as total_above50th")
+            ->selectRaw("COUNT(DISTINCT IF(age_category = '30 - 50 years old', personnel_number, NULL)) as total_30_50th")
+            ->selectRaw("COUNT(DISTINCT IF(age_category = '< 30 years old', personnel_number, NULL)) as total_under30")
             ->selectRaw("SUM(IF(gender = 'Pria', total_hours, 0)) as total_hours_pria")
             ->selectRaw("SUM(IF(gender = 'Wanita', total_hours, 0)) as total_hours_wanita")
             ->selectRaw("SUM(IF(age_category = '< 30 years old', total_hours, 0)) as total_hours_under30")
             ->selectRaw("SUM(IF(age_category = '30 - 50 years old', total_hours, 0)) as total_hours_30_50th")
             ->selectRaw("SUM(IF(age_category = '> 50 years old', total_hours, 0)) as total_hours_above50th")
-            ->groupBy('location');
+            ->selectRaw("AVG(IF(gender = 'Pria', total_hours, NULL)) as avg_hours_pria")
+            ->selectRaw("AVG(IF(gender = 'Wanita', total_hours, NULL)) as avg_hours_wanita")
+            ->groupBy('location', DB::raw(self::POSITION_CASE));
 
         return $this->db->query()
             ->fromSub($sub, 'trn')
@@ -61,6 +71,7 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
             ->leftJoin('locations as loc', 'loc.location_name', '=', 'trn.location')
             ->select(['trn.*', 'acc.acc_style_link'])
             ->whereNotNull('loc.location_name')
+            ->whereNotNull('trn.job_category')
             ->get()
             ->map(function ($row) {
                 return [
@@ -83,18 +94,21 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
                     'Overwrite',
                     '',
                     '',
+                    $row->total_peserta ?? 0,
+                    $row->job_category ?? '',
                     $row->total_pria ?? 0,
                     $row->total_wanita ?? 0,
-                    $row->total_peserta ?? 0,
                     $row->total_hours ?? 0,
-                    $row->total_above50th ?? 0,
-                    $row->total_30_50th ?? 0,
                     $row->total_under30 ?? 0,
+                    $row->total_30_50th ?? 0,
+                    $row->total_above50th ?? 0,
                     $row->total_hours_pria ?? 0,
                     $row->total_hours_wanita ?? 0,
                     $row->total_hours_under30 ?? 0,
                     $row->total_hours_30_50th ?? 0,
-                    $row->total_hours_above50th ?? 0
+                    $row->total_hours_above50th ?? 0,
+                    $row->avg_hours_pria ?? 0,
+                    $row->avg_hours_wanita ?? 0
                 ];
             });
     }
@@ -121,18 +135,21 @@ class BaseCSRExportFormatTRNT implements FromCollection, WithHeadings
             'Record Entry Method',
             'Record Reference',
             'Record Invoice Number',
-            'Total Pria',
-            'Total Wanita',
-            'Total Peserta',
+            'Total',
+            'Job Category',
+            'Total M',
+            'Total F',
             'Total Hours',
-            'Total per >50th',
-            'Total per 30 - 50 th',
-            'Total per <30',
-            'Total Hours Pria',
-            'Total Hours Wanita',
-            'Total Hours per <30',
-            'Total Hours per 30 - 50 th',
-            'Total Hours per >50th'
+            'Total < 30',
+            'Total 30 - 50',
+            'Total > 50',
+            'Total Hrs M',
+            'Total Hrs F',
+            'Total Hours < 30',
+            'Total Hours 30 - 50',
+            'Total Hours > 50',
+            'Avg Hrs M',
+            'Avg Hrs F'
         ];
     }
 }

@@ -56,11 +56,12 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
                     // $row->modified_utc_date ? substr($row->modified_utc_date, 0, 10) : '', 
                     $row->end_date ?? '',
                     $row->end_date ?? '',
-                    'Actual', 'Standard', 'Default', 'Overwrite', '', '', 
-                    $row->total_hours, // Total Hours 
+                    'Actual', 'Standard', 'Default', 'Overwrite', '', '',
+                    $row->personnel_number ?? '',
                     $row->gender, // Gender
                     $row->age_category, // Age Category
-                    $row->level // Level
+                    $row->level, // Level
+                    $row->total_hours, // Total Hours 
                 ];
             });
     }
@@ -86,11 +87,12 @@ class BaseCSRExportFormatTRN implements FromCollection, WithHeadings
             'Record Subtype',
             'Record Entry Method',
             'Record Reference',
-            'Record Invoice Number', 
-            'Total Hours',
+            'Record Invoice Number',
+            'Personnel Number',
             'Gender',
             'Age Category',
-            'Level'
+            'Level',
+            'Total Hours',
         ];
     }
 }
