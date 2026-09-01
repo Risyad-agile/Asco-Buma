@@ -82,6 +82,9 @@ class CSRExportService
             //BaseCSRExportFormatSocialImpact
             \App\Exports\BaseCSRExportFormatSocialImpact::class   => "Account_Setup_and_Data_Load_Social_Impact_{$date}.xlsx",
 
+            //BaseCSRRecruitmentFormat
+            \App\Exports\EnviziRecruitmentExport::class   => "Account_Setup_and_Data_Load_Recruitment_{$date}.xlsx",
+
             // Same format
             // \App\Exports\EnviziTOCWellbeingExport::class   => "Account_Setup_and_Data_Load_Wellbeing_{$date}.xlsx",
         ];

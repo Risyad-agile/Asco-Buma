@@ -132,7 +132,7 @@ class ConnectorService
             $body = json_decode($config['api_body'], true);
         }
 
-        $client = new Client(['timeout' => 30]);
+        $client = new Client(['timeout' => 180]);
 
         $options = ['headers' => $headers];
 

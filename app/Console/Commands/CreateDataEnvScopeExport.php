@@ -12,6 +12,7 @@ use App\Exports\TotalOBandCoalEnvScopeExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Services\IntegrationLogger;
+use App\Exports\S37DataEnvScopeExport;
 
 class CreateDataEnvScopeExport extends Command
 {
@@ -101,6 +102,7 @@ class CreateDataEnvScopeExport extends Command
                     $normalIds  = [];
                     $biodieselIds = [];
                     $totalOBandCoalIds = [];
+                    $s37Groups = []; // caption => [ids], one file per caption
 
                     foreach ($rows as $row) {
                         $style = $styles[$row->account_style_caption] ?? null;
@@ -114,6 +116,12 @@ class CreateDataEnvScopeExport extends Command
                         elseif ($row->account_style_caption === 'Total OB Removal and Coal Production (Ton)') {
                             $totalOBandCoalIds[] = $row->id;
                         }
+
+                        // 🎯 S3.7 — group each caption separately (custom styles = 1 file each)
+                        elseif (str_starts_with($row->account_style_caption, 'S3.7')) {
+                            $s37Groups[$row->account_style_caption][] = $row->id;
+                        }
+
                         // 🔥 EXISTING LOGIC
                         elseif ($style && strtoupper((string) $style->acc_style_xls_format) === 'SPECIAL') {
                             $specialIds[] = $row->id;
@@ -321,6 +329,41 @@ class CreateDataEnvScopeExport extends Command
 
                         $totalFiles++;
                         $totalRows += count($totalOBandCoalIds);
+                    }
+
+                    // ===============================
+                    // S3.7 EXPORT — one file per custom account style
+                    // ===============================
+                    foreach ($s37Groups as $caption => $s37Ids) {
+
+                        if (empty($s37Ids)) continue;
+
+                        // safe filename from caption
+                        $safeCaption = preg_replace('/[^A-Za-z0-9]+/', '_', $caption);
+                        $safeCaption = trim($safeCaption, '_');
+
+                        $filename = sprintf(
+                            'Account_Setup_and_Data_Load_%s_%d_%s_batch%03d.xlsx',
+                            $safeCaption,
+                            $scope,
+                            now()->format('Ymd_His'),
+                            $batch
+                        );
+
+                        $localPath = 'exports/' . $filename;
+
+                        Excel::store(new S37DataEnvScopeExport($s37Ids), $localPath, 'local');
+
+                        $this->info("⚙ S3.7 exported ({$caption}): " . count($s37Ids) . " → {$filename}");
+
+                        $logger->log($run, 'file_exported', 'S3.7 exported locally', [
+                            'scope' => $scope, 'batch' => $batch, 'type' => 'S3.7',
+                            'caption' => $caption, 'filename' => $filename,
+                            'count' => count($s37Ids), 'localPath' => $localPath,
+                        ]);
+
+                        $totalFiles++;
+                        $totalRows += count($s37Ids);
                     }
 
                     // Mark all rows in this batch as exported
