@@ -106,8 +106,7 @@ class TotalOBandCoalEnvScopeExport implements
             'Record Entry Method',              // 17 ✅ fixed "Overwrite"
             'Record Reference',                 // 18
             'Record Invoice Number',            // 19
-            $this->qtyHeader,                   // 20 ✅ from AccountStyles.acc_style_xls_header
-            'Values (Rp)',                       // 21
+            $this->qtyHeader                    // 20 ✅ from AccountStyles.acc_style_xls_header
         ];
     }
 
@@ -130,7 +129,7 @@ class TotalOBandCoalEnvScopeExport implements
             $row->location ?? '',                  // 3
             null,                            // 4 location ref (not available)
             $style?->acc_style_link ?? '',         // 5 ✅ account style link
-            'Non Scope - Total OB & Coal Production (Tons)',     // 6 hardcoded to match Envizi
+            $row->account_style_caption,     // 6 hardcoded to match Envizi
             'Default',                       // 7 ✅ fixed
             $row->account_number ?? '',            // 8
             $row->account_reference ?? '',         // 9
@@ -144,8 +143,7 @@ class TotalOBandCoalEnvScopeExport implements
             'Overwrite',                     // 17 ✅ fixed
             $row->record_reference ?? '',          // 18
             $row->record_invoice_number ?? 0,     // 19
-            $row->quantity ?? 0, // 20
-            $row->total_cost_incl_tax_local_currency ?? 0 // 21
+            $row->quantity ?? 0  // 20
         ];
     }
 
