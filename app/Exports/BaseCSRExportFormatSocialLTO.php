@@ -41,6 +41,7 @@ class BaseCSRExportFormatSocialLTO implements FromCollection, WithHeadings
             ->whereNotNull('loc.location_name')
             ->selectRaw("
             toc.location,
+            toc.year,
             acc.acc_style_link,
             acc.acc_style_caption,
             MIN(DATE(toc.created_at)) AS created_at,
@@ -48,7 +49,7 @@ class BaseCSRExportFormatSocialLTO implements FromCollection, WithHeadings
             SUM(IFNULL(toc.output_event, 0)) AS total_output_event,
             SUM(IFNULL(toc.output_all, 0)) AS total_output_all
         ")
-            ->groupBy('toc.location', 'acc.acc_style_link', 'acc.acc_style_caption')
+            ->groupBy('toc.location', 'toc.year', 'acc.acc_style_link', 'acc.acc_style_caption')
             ->get()
             ->map(function ($row) {
                 return [
@@ -63,8 +64,8 @@ class BaseCSRExportFormatSocialLTO implements FromCollection, WithHeadings
                     '',// Account Reference
                     '',// Account Supplier
                     '',// Account Reader
-                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
-                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record Start YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record End YYYY-MM-DD
                     'Actual',// Record Data Quality
                     'Standard',// Record Billing Type
                     'Default',// Record Subtype

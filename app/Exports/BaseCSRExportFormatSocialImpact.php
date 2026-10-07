@@ -42,6 +42,7 @@ class BaseCSRExportFormatSocialImpact implements FromCollection, WithHeadings
             ->whereNotNull('s.location')
             ->select(
                 's.location',
+                's.year',
                 's.total_impacted_real',
                 's.total_implementation',
                 's.total_observation'
@@ -61,8 +62,8 @@ class BaseCSRExportFormatSocialImpact implements FromCollection, WithHeadings
                     '',                              // Account Reference
                     '',                              // Account Supplier
                     '',                              // Account Reader
-                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
-                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record Start YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record End YYYY-MM-DD
                     'Actual',                        // Record Data Quality
                     'Standard',                      // Record Billing Type
                     'Default',                       // Record Subtype

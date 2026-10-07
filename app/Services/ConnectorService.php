@@ -53,20 +53,39 @@ class ConnectorService
     {
         $config = $this->getConfig($companyId, 'data_toc');
 
-        // Inject current year as periode (e.g. ?ver=v1&periode=2026)
-        $year = now('Asia/Jakarta')->year;
-        $endpoint = $config['api_endpoint'] ?? '';
-        // strip any existing period= or periode= to avoid duplicates/wrong param
-        $endpoint = preg_replace('/([?&])periode?=\d+/', '', $endpoint);
-        // clean a dangling ? or & if it got left at the end
-        $endpoint = rtrim($endpoint, '?&');
-        $separator = str_contains($endpoint, '?') ? '&' : '?';
-        $config['api_endpoint'] = $endpoint . $separator . 'periode=' . $year;
+        // History + current year. TOC data is dated 1 December, so the
+        // current year may be empty until then — an empty year just returns nothing.
+        $years = [2024, 2025, now('Asia/Jakarta')->year];
+        $years = array_values(array_unique($years));
 
-        Log::info("🚀 Fetch TOC - Company {$companyId}", ['endpoint' => $config['api_endpoint']]);
-        $data = $this->fetchAllPages($config);
-        Log::info("✅ TOC fetched successfully", ['company_id' => $companyId, 'total_rows' => count($data)]);
-        return $data;
+        $allData = [];
+
+        foreach ($years as $year) {
+            $cfg = $config;
+            $endpoint = $cfg['api_endpoint'] ?? '';
+            $endpoint = preg_replace('/([?&])periode?=\d+/', '', $endpoint);
+            $endpoint = rtrim($endpoint, '?&');
+            $separator = str_contains($endpoint, '?') ? '&' : '?';
+            $cfg['api_endpoint'] = $endpoint . $separator . 'periode=' . $year;
+
+            Log::info("🚀 Fetch TOC - Company {$companyId}", ['year' => $year, 'endpoint' => $cfg['api_endpoint']]);
+
+            $yearData = $this->fetchAllPages($cfg);
+
+            // Tag each item with the year we requested (API has no year field)
+            foreach ($yearData as &$item) {
+                if (is_array($item)) {
+                    $item['_periode_year'] = $year;
+                }
+            }
+            unset($item);
+
+            Log::info("✅ TOC fetched for year {$year}", ['rows' => count($yearData)]);
+            $allData = array_merge($allData, $yearData);
+        }
+
+        Log::info("✅ TOC fetched successfully (all years)", ['company_id' => $companyId, 'total_rows' => count($allData)]);
+        return $allData;
     }
 
     public function fetchSHEFromSource($companyId): array

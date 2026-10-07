@@ -35,6 +35,7 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
             ->where('s.organization', '!=', '')
             ->select(
                 's.location',
+                's.year',
                 's.total_cost_planning',
                 's.total_cost_implementation',
                 's.pillar_education_health',
@@ -62,8 +63,8 @@ class BaseCSRExportFormatImplementationCost implements FromCollection, WithHeadi
                     '',
                     '',
                     '',
-                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
-                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record Start YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',

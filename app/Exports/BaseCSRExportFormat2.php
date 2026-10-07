@@ -98,7 +98,8 @@ class BaseCSRExportFormat2 implements FromCollection, WithHeadings
                     '',                  // Account Supplier
                     '',                  // Account Reader
                     sprintf('%04d-%02d-01', $row->year, $row->month), // Record Start (1st of month)
-                    sprintf('%04d-%02d-01', $row->year, $row->month), // Record End (1st of month) 
+                    // sprintf('%04d-%02d-01', $row->year, $row->month), // Record End (1st of month) 
+                    date('Y-m-t', strtotime(sprintf('%04d-%02d-01', $row->year, $row->month))), // Record End (last day of month)
                     'Actual', 'Standard', 'Default', 'Overwrite', '', '',
                     $row->employee_total ?? 0,
                     $row->male ?? 0,

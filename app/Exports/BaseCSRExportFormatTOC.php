@@ -46,6 +46,7 @@ class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
 
         $selects = [
             'toc.location',
+            'toc.year',
             'acc.acc_style_link',
             'acc.acc_style_caption',
             'MIN(DATE(toc.created_at)) AS created_at',
@@ -65,7 +66,7 @@ class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
             ->where('toc.problem_category', $this->category)
             ->whereNotNull('loc.location_name')
             ->selectRaw(implode(",\n", $selects))
-            ->groupBy('toc.location', 'acc.acc_style_link', 'acc.acc_style_caption')
+            ->groupBy('toc.location', 'toc.year', 'acc.acc_style_link', 'acc.acc_style_caption')
             ->get()
             ->map(function ($row) { 
                 return [
@@ -81,10 +82,8 @@ class BaseCSRExportFormatTOC implements FromCollection, WithHeadings
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    // date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
-                    // date('Y') . '-12-01',                    // Record End YYYY-MM-DD
-                    '2026-06-01',                    // Record Start YYYY-MM-DD
-                    '2026-06-01',                    // Record End YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record Start YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',

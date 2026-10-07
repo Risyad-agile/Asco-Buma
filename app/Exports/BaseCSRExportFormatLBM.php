@@ -21,7 +21,7 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
         $this->category = $category;
 
         // dynamic DB connection
-        $this->db = DB::connection('dynamic'); 
+        $this->db = DB::connection('dynamic');
 
         // ambil org_link & comp_name dari default DB
         $company = DB::table('companies')
@@ -46,6 +46,7 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
 
         $selects = [
             'toc.location',
+            'toc.year',
             'acc.acc_style_link',
             'acc.acc_style_caption',
             'MIN(DATE(toc.created_at)) AS created_at',
@@ -60,14 +61,14 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
         }
 
         return $this->db->table('data_toc as toc')
-            ->leftjoin('account_styles as acc','acc.acc_style_caption','=','toc.problem_category')
+            ->leftjoin('account_styles as acc', 'acc.acc_style_caption', '=', 'toc.problem_category')
             ->leftJoin('locations as loc', 'loc.location_name', '=', 'toc.location')
             ->where('toc.problem_category', $this->category)
             ->whereNotNull('loc.location_name')
             ->selectRaw(implode(",\n", $selects))
-            ->groupBy('toc.location', 'acc.acc_style_link', 'acc.acc_style_caption')
+            ->groupBy('toc.location', 'toc.year', 'acc.acc_style_link', 'acc.acc_style_caption')
             ->get()
-            ->map(function ($row) { 
+            ->map(function ($row) {
                 return [
                     $this->orgLink,      // Organization Link
                     $this->compName,     // Organization
@@ -76,13 +77,13 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
                     $row->acc_style_link, //'17011833',          // Account Style Link
                     $row->acc_style_caption, //'Theory of Change - Education',
                     'Default',
-                    $row->acc_style_caption.'_'.($row->location ?? ''),
+                    $row->acc_style_caption . '_' . ($row->location ?? ''),
                     // 'TOC - Education - Access and Quality_' . ($row->location ?? ''),
                     '',                  // Account Reference
                     '',                  // Account Supplier
                     '',                  // Account Reader
-                    date('Y') . '-12-01',                    // Record Start YYYY-MM-DD
-                    date('Y') . '-12-01',                    // Record End YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record Start YYYY-MM-DD
+                    ($row->year ?? date('Y')) . '-12-01',    // Record End YYYY-MM-DD
                     'Actual',
                     'Standard',
                     'Default',
@@ -132,7 +133,7 @@ class BaseCSRExportFormatLBM implements FromCollection, WithHeadings
             'Outcome Add Entrepreneur',
             'Farmer',
             'Outcome Farmer',
-            'Outcome Add Farmer'            
+            'Outcome Add Farmer'
         ];
     }
 }

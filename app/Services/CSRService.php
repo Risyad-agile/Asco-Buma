@@ -254,6 +254,7 @@ class CSRService
                 $jobSite      = $content['jobSite'] ?? null;
                 $organization = $content['organization'] ?? null;
                 $details      = $content['details'] ?? [];
+                $year = $content['_periode_year'] ?? null;
 
                 if (!$jobSite || !$organization || !is_array($details)) {
                     $skipped++;
@@ -295,6 +296,7 @@ class CSRService
                                 'category'            => $category,
                                 'problem_category'    => $problemCategory,
                                 'location'            => $location,
+                                'year'                => $year,
                                 'tipe_beneficiaries'  => $tipe,
 
                                 'output'              => (int) ($benefit['output'] ?? 0),
@@ -311,6 +313,7 @@ class CSRService
 
                             $query = $db->table('data_toc')
                                 ->where('job_site', $jobSite)
+                                ->where('year', $year)
                                 ->where('category', $category)
                                 ->where('problem_category', $problemCategory)
                                 ->where('location', $location)
@@ -342,6 +345,7 @@ class CSRService
                                 'category'            => $category,
                                 'problem_category'    => $problemCategory,
                                 'location'            => $location,
+                                'year'                => $year,
                                 'tipe_beneficiaries'  => $tipe,
 
                                 'output'              => null,
@@ -356,6 +360,7 @@ class CSRService
 
                             $query = $db->table('data_toc')
                                 ->where('job_site', $jobSite)
+                                ->where('year', $year)
                                 ->where('category', $category)
                                 ->where('problem_category', $problemCategory)
                                 ->where('location', $location)
@@ -387,6 +392,7 @@ class CSRService
                     'job_site'                  => $jobSite,
                     'organization'              => $organization,
                     'location'                  => $content['siteShortName'] ?? '',
+                    'year'                      => $year,
                     'total_cost_planning'       => $summary['totalCostPlanning'] ?? 0,
                     'total_cost_implementation' => $summary['totalCostImplementation'] ?? 0,
                     'pillar_socio_culture'      => $pillars['Socio-Cultural & Religious']['pillarCost'] ?? 0,
@@ -407,11 +413,13 @@ class CSRService
 
                 $exists = $db->table('data_toc_summary')
                     ->where('job_site', $jobSite)
+                    ->where('year', $year)
                     ->exists();
 
                 if ($exists) {
                     $db->table('data_toc_summary')
                         ->where('job_site', $jobSite)
+                        ->where('year', $year)
                         ->update($summaryPayload);
                 } else {
                     $summaryPayload['created_at'] = now();
